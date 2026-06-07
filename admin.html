@@ -35,6 +35,7 @@
     .wide-field textarea { min-height: 96px; }
     .json-editor { min-height: 520px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size:13px; line-height:1.45; }
     .token-warning { background:#fff2df; border:1px solid var(--line); border-radius:16px; padding:12px; color:var(--muted); }
+    .status-note { background:#f7fbff; border:1px solid var(--line); border-radius:16px; padding:12px; color:var(--muted); }
     .focused-editor { display:grid; gap:14px; }
     .focused-card-form { border:1px solid var(--line); border-radius:20px; padding:14px; background:#fffaf3; display:grid; gap:10px; }
     .focused-card-form__head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -212,8 +213,15 @@
             </section>
 
             <section class="panel">
-              <h2 style="font-size:30px;">Telegram-уведомления</h2>
-              <div class="token-warning">В GitHub Pages-версии автоматические уведомления Telegram-бота недоступны без сервера, потому что токен бота нельзя безопасно хранить в браузере. Для Telegram-бота используйте серверную версию сайта.</div>
+              <h2 style="font-size:30px;">Telegram-уведомления через Cloudflare Worker</h2>
+              <div class="status-note">
+                В этой GitHub Pages-версии Telegram работает через Cloudflare Worker. Токен бота хранится в Cloudflare Secrets, а не в коде сайта.
+              </div>
+              <form class="admin-form" data-worker-form>
+                <label>Cloudflare Worker URL<input name="telegramWorkerUrl" placeholder="https://lavka-orders.username.workers.dev" /></label>
+                <button class="button button--primary" type="submit">Сохранить Worker URL в site.json</button>
+                <p class="form-message" data-worker-message></p>
+              </form>
             </section>
           </div>
 

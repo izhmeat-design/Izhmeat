@@ -334,21 +334,63 @@ async function submitOrder(event) {
     comment: form.get('comment')
   };
 
-  const orderId = nextLocalOrderId();
-  const orderText = formatOrderText(orderId, customer, items);
-  const mailTo = state.site.email || 'izhmeat@gmail.com';
-  const mailUrl = `mailto:${encodeURIComponent(mailTo)}?subject=${encodeURIComponent(`Заказ №${orderId}`)}&body=${encodeURIComponent(orderText)}`;
+  const fallbackOrderId = nextLocalOrderId();
+  const workerUrl = String(state.site.telegramWorkerUrl || '').trim();
+  const orderText = formatOrderText(fallbackOrderId, customer, items);
+  const payload = {
+    orderId: fallbackOrderId,
+    customer,
+    items: items.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: Number(item.price),
+      unit: item.unit,
+      qty: Number(item.qty)
+    })),
+    total: items.reduce((sum, item) => sum + Number(item.price) * Number(item.qty), 0),
+    source: location.href
+  };
 
   if (submitButton) submitButton.disabled = true;
-  try { await navigator.clipboard?.writeText(orderText).catch(() => {}); } catch {}
-  window.location.href = mailUrl;
+  message.textContent = 'Отправляем заказ...';
 
-  state.cart = {};
-  saveCart();
-  renderCart();
-  formElement.reset();
-  message.textContent = `Заказ №${orderId} сформирован. Текст заказа скопирован, письмо открыто для отправки. Спасибо за заказ.`;
-  if (submitButton) submitButton.disabled = false;
+  try {
+    if (workerUrl) {
+      const response = await fetch(workerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.ok === false) {
+        throw new Error(data.error || 'Cloudflare Worker не принял заказ');
+      }
+
+      const finalOrderId = data.orderId || fallbackOrderId;
+      state.cart = {};
+      saveCart();
+      renderCart();
+      formElement.reset();
+      message.textContent = `Заказ №${finalOrderId} отправлен и принят в обработку. Спасибо за заказ.`;
+      return;
+    }
+
+    const mailTo = state.site.email || 'izhmeat@gmail.com';
+    const mailUrl = `mailto:${encodeURIComponent(mailTo)}?subject=${encodeURIComponent(`Заказ №${fallbackOrderId}`)}&body=${encodeURIComponent(orderText)}`;
+    try { await navigator.clipboard?.writeText(orderText).catch(() => {}); } catch {}
+    window.location.href = mailUrl;
+
+    state.cart = {};
+    saveCart();
+    renderCart();
+    formElement.reset();
+    message.textContent = `Заказ №${fallbackOrderId} сформирован. Текст заказа скопирован, письмо открыто для отправки. Спасибо за заказ.`;
+  } catch (error) {
+    message.textContent = `Не удалось отправить заказ: ${error.message}`;
+  } finally {
+    if (submitButton) submitButton.disabled = false;
+  }
 }
 
 async function init() {

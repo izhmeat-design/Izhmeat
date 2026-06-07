@@ -1,0 +1,17 @@
+name = "lavka-orders-telegram"
+main = "worker.js"
+compatibility_date = "2026-06-07"
+
+# После публикации Worker вставьте его URL в админке сайта:
+# Редактирование сайта → Telegram-уведомления через Cloudflare Worker
+
+[vars]
+# Можно оставить * для теста, затем заменить на адрес GitHub Pages сайта:
+# ALLOWED_ORIGIN = "https://USERNAME.github.io"
+ALLOWED_ORIGIN = "*"
+TELEGRAM_CHAT_ID = "8674762889"
+
+# Для общего счетчика заказов за день создайте KV namespace и раскомментируйте:
+# [[kv_namespaces]]
+# binding = "ORDER_COUNTERS"
+# id = "your_kv_namespace_id"

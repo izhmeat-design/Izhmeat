@@ -154,6 +154,7 @@ async function loadData() {
   renderSiteForm();
   renderFocusedScreenshotSections();
   renderContentLists();
+  renderWorkerForm();
   renderJsonEditor();
 }
 
@@ -329,6 +330,7 @@ async function saveSite(site, messageNode, commitMessage = 'Update site') {
   renderSiteForm();
   renderFocusedScreenshotSections();
   renderContentLists();
+  renderWorkerForm();
   renderJsonEditor();
   if (messageNode) messageNode.textContent = 'Сохранено. GitHub Pages обновит сайт через некоторое время.';
 }
@@ -590,6 +592,29 @@ async function deleteContent(area, index) {
   setAreaItems(area, items);
   try { await saveSite(state.site, $('[data-content-message]'), `Delete ${area} item`); } catch (error) { $('[data-content-message]').textContent = error.message; }
 }
+
+
+function renderWorkerForm() {
+  const form = $('[data-worker-form]');
+  if (!form) return;
+  form.telegramWorkerUrl.value = state.site.telegramWorkerUrl || '';
+}
+
+async function submitWorkerForm(event) {
+  event.preventDefault();
+  const message = $('[data-worker-message]');
+  message.textContent = 'Сохраняем Worker URL...';
+  try {
+    await saveSite(
+      { ...state.site, telegramWorkerUrl: event.currentTarget.telegramWorkerUrl.value.trim() },
+      message,
+      'Update Cloudflare Worker URL'
+    );
+  } catch (error) {
+    message.textContent = error.message;
+  }
+}
+
 
 function renderJsonEditor() {
   $('[data-json-form] textarea[name="json"]').value = JSON.stringify(state.site, null, 2);

@@ -4,7 +4,7 @@
   "heroTitle": "Свежая говядина, свинина, птица и баранина",
   "heroText": "Мы подберём отборные куски, сделаем аккуратный разруб и подготовим мясо для шашлыка под заказ. Выберите товары, а мы уточним вес и удобное время доставки по Ижевску.",
   "phone": "+7 000 000-00-00",
-  "email": "orders@example.com",
+  "email": "izhmeat@gmail.com",
   "workTime": "Ежедневно с 9:00 до 20:00",
   "deliveryTime": "Доставка ежедневно с 10:00 до 19:00",
   "addresses": [
@@ -39,10 +39,10 @@
       "eyebrow": "О магазине",
       "title": "Лавка свежего мяса — мясная лавка для Ижевска",
       "text": "Мы собираем ассортимент вокруг свежего мяса: отборные куски, разруб под блюдо, мясо для шашлыка и удобные наборы для дома. Каждый заказ уточняем по весу и подготовке перед выдачей или доставкой.",
-      "image": "/uploads/photo-beef-cuts.jpg"
+      "image": "uploads/photo-beef-cuts.jpg"
     }
   ],
-  "heroImage": "/uploads/photo-beef-cuts.jpg",
+  "heroImage": "uploads/photo-beef-cuts.jpg",
   "heroBadgeLabel": "Сегодня в наличии",
   "heroBadgeText": "говядина • свинина • птица • баранина",
   "heroStampText": "свежее мясо",
@@ -62,21 +62,21 @@
       "enabled": true,
       "title": "Разделка и отбор",
       "text": "свежие куски под блюдо",
-      "image": "/assets/gaidai-byvaliy.webp",
+      "image": "assets/gaidai-byvaliy.webp",
       "id": "hero-pill-1"
     },
     {
       "enabled": true,
       "title": "Мясо для шашлыка",
       "text": "нарезка и маринад",
-      "image": "/assets/gaidai-balbes.webp",
+      "image": "assets/gaidai-balbes.webp",
       "id": "hero-pill-2"
     },
     {
       "enabled": true,
       "title": "Мясные наборы",
       "text": "для дома и ужина",
-      "image": "/assets/gaidai-trus.webp",
+      "image": "assets/gaidai-trus.webp",
       "id": "hero-pill-3"
     }
   ],
@@ -90,7 +90,7 @@
         "tag": "Свежий разруб",
         "title": "Свежий разруб",
         "text": "Мы подберём отборные куски, сделаем разруб и подготовим мясо для стейков, жаркого, супов и фарша.",
-        "image": "/assets/gaidai-byvaliy.webp",
+        "image": "assets/gaidai-byvaliy.webp",
         "id": "quality-card-1"
       },
       {
@@ -98,7 +98,7 @@
         "tag": "Шашлык",
         "title": "Мясо для шашлыка",
         "text": "Мы поможем выбрать мясо для шашлыка, нарежем свежую шейку и замаринуем под заказ для мангала и гриля.",
-        "image": "/assets/gaidai-balbes.webp",
+        "image": "assets/gaidai-balbes.webp",
         "id": "quality-card-2"
       },
       {
@@ -106,12 +106,12 @@
         "tag": "Мясные наборы",
         "title": "Мясные наборы",
         "text": "Мы соберём мясной набор для дома: для супа, жарки, запекания или семейного ужина на несколько дней.",
-        "image": "/assets/gaidai-trus.webp",
+        "image": "assets/gaidai-trus.webp",
         "id": "quality-card-3"
       }
     ]
   },
-  "deliveryImage": "/uploads/photo-pork-kebab.jpg",
+  "deliveryImage": "uploads/photo-pork-kebab.jpg",
   "deliveryServices": [
     {
       "enabled": true,
@@ -136,5 +136,6 @@
     "eyebrow": "Доставка и оплата",
     "title": "Свежий ассортимент с удобной доставкой"
   },
-  "logoImage": "/assets/logo-lavka-svezhego-myasa.png"
+  "logoImage": "assets/logo-lavka-svezhego-myasa.png",
+  "telegramWorkerUrl": ""
 }
