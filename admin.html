@@ -17,7 +17,7 @@
     .admin-tab { border:0; cursor:pointer; padding:13px 18px; border-radius:999px; font-weight:950; background:#fff; color:var(--ink); border:1px solid var(--line); }
     .admin-tab.is-active { background:var(--dark); color:#fff; }
     .admin-grid { display:grid; grid-template-columns: 420px 1fr; gap:22px; align-items:start; }
-    .admin-grid--site { grid-template-columns: minmax(420px, .95fr) minmax(520px, 1.05fr); }
+    .admin-grid--site { grid-template-columns: minmax(430px, .95fr) minmax(520px, 1.05fr); }
     .admin-stack, .admin-products, .editor-list { display:grid; gap:12px; }
     .admin-product, .editor-item { display:grid; grid-template-columns:72px 1fr auto; gap:14px; align-items:center; border:1px solid var(--line); border-radius:18px; padding:12px; background:#fffaf3; }
     .editor-item { grid-template-columns:88px 1fr auto; }
@@ -35,6 +35,13 @@
     .wide-field textarea { min-height: 96px; }
     .json-editor { min-height: 520px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size:13px; line-height:1.45; }
     .token-warning { background:#fff2df; border:1px solid var(--line); border-radius:16px; padding:12px; color:var(--muted); }
+    .focused-editor { display:grid; gap:14px; }
+    .focused-card-form { border:1px solid var(--line); border-radius:20px; padding:14px; background:#fffaf3; display:grid; gap:10px; }
+    .focused-card-form__head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .focused-card-form__head strong { font-size:18px; }
+    .focused-card-form__preview { display:grid; grid-template-columns:84px 1fr; gap:12px; align-items:center; }
+    .focused-card-form__preview img { width:84px; height:84px; object-fit:cover; border-radius:16px; background:var(--warm); border:1px solid var(--line); }
+    .pill-note { display:inline-flex; padding:7px 10px; border-radius:999px; background:#fff2df; color:var(--accent); font-weight:850; font-size:13px; }
     @media (max-width: 1100px) { .admin-grid, .admin-grid--site, .admin-form__row, .admin-form__row--3 { grid-template-columns:1fr; } .admin-header { align-items:flex-start; flex-direction:column; } }
   </style>
 </head>
@@ -43,9 +50,7 @@
     <form class="panel admin-form" data-connect-form>
       <a class="brand brand--with-logo" href="index.html"><img class="brand__logo" src="assets/logo-lavka-svezhego-myasa.png" alt="Лавка свежего мяса" /></a>
       <h1 style="font-size:34px;margin:8px 0 0;">GitHub-админка</h1>
-      <div class="token-warning">
-        Введите GitHub token вручную. Он не сохраняется в файлах сайта и держится только до перезагрузки страницы.
-      </div>
+      <div class="token-warning">Введите GitHub token вручную. Он не сохраняется в файлах сайта и держится только до перезагрузки страницы.</div>
       <div class="admin-form__row">
         <label>Владелец / Owner<input name="owner" required placeholder="например: ryst1kkbybit" /></label>
         <label>Репозиторий<input name="repo" required placeholder="lavka-svezhego-myasa" /></label>
@@ -66,7 +71,7 @@
         <div>
           <p class="eyebrow">GitHub Pages CMS</p>
           <h1 style="font-size:42px;margin:0;">Лавка свежего мяса</h1>
-          <p class="muted">Изменения сохраняются коммитами прямо в GitHub. После сохранения GitHub Pages обновит сайт не мгновенно, обычно в течение минуты.</p>
+          <p class="muted">Изменения сохраняются коммитами в GitHub. Telegram/email-бот без сервера в этой версии не работает.</p>
         </div>
         <div class="admin-actions">
           <a class="button button--light" href="index.html">Открыть сайт</a>
@@ -87,9 +92,9 @@
             <form class="admin-form" data-product-form>
               <input name="id" type="hidden" />
               <input name="imageCurrent" type="hidden" />
-              <label>Название<input name="name" required placeholder="Например: Шейка свиная" /></label>
+              <label>Название<input name="name" required /></label>
               <div class="admin-form__row">
-                <label>Категория<input name="category" required placeholder="Свинина" /></label>
+                <label>Категория<input name="category" required /></label>
                 <label>Цена<input name="price" type="number" min="1" step="1" required /></label>
               </div>
               <div class="admin-form__row">
@@ -124,21 +129,79 @@
         <div class="admin-grid admin-grid--site">
           <div class="admin-stack">
             <section class="panel">
-              <h2 style="font-size:30px;">Основные тексты</h2>
+              <h2 style="font-size:30px;">Основные разделы сайта</h2>
               <form class="admin-form" data-site-form>
-                <label>Название сайта<input name="brand" /></label>
+                <h3>Общее</h3>
+                <div class="admin-form__row">
+                  <label>Название сайта<input name="brand" /></label>
+                  <label>Телефон<input name="phone" /></label>
+                </div>
                 <label>Слоган<input name="tagline" /></label>
+                <div class="admin-form__row">
+                  <label>Email<input name="email" /></label>
+                  <label>Время работы<input name="workTime" /></label>
+                </div>
+                <label>Текст в подвале<input name="footerText" /></label>
+
+                <h3>Главный экран</h3>
                 <label>Главный заголовок<input name="heroTitle" /></label>
                 <label class="wide-field">Главный текст<textarea name="heroText" rows="3"></textarea></label>
-                <label>Телефон<input name="phone" /></label>
-                <label>Email<input name="email" /></label>
+                <div class="admin-form__row">
+                  <label>Подпись бейджа<input name="heroBadgeLabel" /></label>
+                  <label>Текст бейджа<input name="heroBadgeText" /></label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Текст круглой метки<input name="heroStampText" /></label>
+                  <label>Главное фото<input name="heroImageFile" type="file" accept="image/*" /></label>
+                </div>
+                <input name="heroImage" type="hidden" />
+                <div class="admin-form__row">
+                  <label>Логотип<input name="logoImageFile" type="file" accept="image/*" /></label>
+                  <label>Фото доставки<input name="deliveryImageFile" type="file" accept="image/*" /></label>
+                </div>
+                <input name="logoImage" type="hidden" />
+                <input name="deliveryImage" type="hidden" />
+
+                <h3>Каталог</h3>
+                <div class="admin-form__row">
+                  <label>Метка каталога<input name="catalogEyebrow" /></label>
+                  <label>Заголовок каталога<input name="catalogTitle" /></label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Подпись поиска<input name="catalogSearchLabel" /></label>
+                  <label>Плейсхолдер поиска<input name="catalogSearchPlaceholder" /></label>
+                </div>
+
+                <h3>Доставка и описание</h3>
+                <div class="admin-form__row">
+                  <label>Метка доставки<input name="deliverySectionEyebrow" /></label>
+                  <label>Заголовок доставки<input name="deliverySectionTitle" /></label>
+                </div>
+                <label>Время доставки<input name="deliveryTime" /></label>
+                <div class="admin-form__row">
+                  <label>Название доставки<input name="deliveryCity" /></label>
+                  <label>Стоимость доставки<input name="deliveryPrice" type="number" /></label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Бесплатно от<input name="deliveryFreeFrom" type="number" /></label>
+                  <label>Пригород<input name="deliverySuburb" /></label>
+                </div>
+                <label>Примечание доставки<input name="deliveryNote" /></label>
+
+                <div class="admin-form__row">
+                  <label>Метка описания<input name="aboutEyebrow" /></label>
+                  <label>Заголовок описания<input name="aboutTitle" /></label>
+                </div>
                 <label class="wide-field">Описание ассортимента<textarea name="about" rows="4"></textarea></label>
                 <label class="wide-field">Адреса, каждый с новой строки<textarea name="addresses" rows="3"></textarea></label>
                 <label class="wide-field">Преимущества, каждое с новой строки<textarea name="benefits" rows="4"></textarea></label>
-                <button class="button button--primary" type="submit">Сохранить основные тексты</button>
+                <label class="wide-field">Оплата, каждое с новой строки<textarea name="payment" rows="3"></textarea></label>
+
+                <button class="button button--primary" type="submit">Сохранить основные разделы</button>
                 <p class="form-message" data-site-message></p>
               </form>
             </section>
+
             <section class="panel">
               <h2 style="font-size:30px;">Загрузка фото</h2>
               <form class="admin-form" data-upload-form>
@@ -147,17 +210,93 @@
                 <p class="form-message" data-upload-message></p>
               </form>
             </section>
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Telegram-уведомления</h2>
+              <div class="token-warning">В GitHub Pages-версии автоматические уведомления Telegram-бота недоступны без сервера, потому что токен бота нельзя безопасно хранить в браузере. Для Telegram-бота используйте серверную версию сайта.</div>
+            </section>
           </div>
 
-          <section class="panel">
-            <h2 style="font-size:30px;">Полное редактирование сайта JSON</h2>
-            <p class="muted">Здесь можно менять все блоки, карточки, фото и тексты сайта. Пути к фото должны быть вида <code>uploads/photo.jpg</code> или <code>assets/logo.png</code>.</p>
-            <form class="admin-form" data-json-form>
-              <textarea class="json-editor" name="json"></textarea>
-              <button class="button button--primary" type="submit">Сохранить site.json в GitHub</button>
-              <p class="form-message" data-json-message></p>
-            </form>
-          </section>
+          <div class="admin-stack">
+            <section class="panel">
+              <h2 style="font-size:30px;">Разделы со скриншота</h2>
+              <div class="focused-editor">
+                <div>
+                  <h3>Верхние маленькие карточки</h3>
+                  <div data-focused-hero-pills></div>
+                </div>
+
+                <form class="admin-form" data-focused-quality-head>
+                  <h3>Заголовок и описание большого раздела</h3>
+                  <div class="admin-form__row">
+                    <label>Метка<input name="eyebrow" /></label>
+                    <label>Заголовок<input name="title" /></label>
+                  </div>
+                  <label class="wide-field">Описание<textarea name="lead" rows="3"></textarea></label>
+                  <button class="button button--primary" type="submit">Сохранить заголовок раздела</button>
+                  <p class="form-message" data-focused-quality-head-message></p>
+                </form>
+
+                <div>
+                  <h3>Большие карточки раздела</h3>
+                  <div data-focused-quality-cards></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Карточки, статьи и блоки</h2>
+              <form class="admin-form" data-content-form>
+                <input name="id" type="hidden" />
+                <input name="imageCurrent" type="hidden" />
+                <div class="admin-form__row">
+                  <label>Где редактировать
+                    <select name="area">
+                      <option value="heroPills">Карточки главного экрана</option>
+                      <option value="qualityCards">Карточки «Свежее мясо»</option>
+                      <option value="deliveryServices">Услуги доставки</option>
+                      <option value="siteBlocks">Дополнительные статьи/блоки</option>
+                    </select>
+                  </label>
+                  <label class="checkbox"><input name="enabled" type="checkbox" checked /> Показывать</label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Метка / бейдж<input name="tag" /></label>
+                  <label>Заголовок<input name="title" /></label>
+                </div>
+                <label class="wide-field">Текст<textarea name="text" rows="4"></textarea></label>
+                <div class="admin-form__row">
+                  <label>Фото элемента<input name="image" type="file" accept="image/*" /></label>
+                  <label>Ссылка на фото<input name="imageUrl" placeholder="uploads/example.jpg" /></label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Тема блока<select name="theme"><option value="warm">Тёплый фон</option><option value="light">Светлый фон</option><option value="dark">Тёмный фон</option></select></label>
+                  <label>Положение фото<select name="layout"><option value="image-right">Фото справа</option><option value="image-left">Фото слева</option></select></label>
+                </div>
+                <button class="button button--primary" type="submit">Сохранить элемент</button>
+                <button class="button button--light" data-reset-content type="button">Новый элемент</button>
+                <p class="form-message" data-content-message></p>
+              </form>
+
+              <h3>Главный экран</h3>
+              <div class="editor-list" data-list="heroPills"></div>
+              <h3>Свежее мясо</h3>
+              <div class="editor-list" data-list="qualityCards"></div>
+              <h3>Доставка</h3>
+              <div class="editor-list" data-list="deliveryServices"></div>
+              <h3>Дополнительные статьи/блоки</h3>
+              <div class="editor-list" data-list="siteBlocks"></div>
+            </section>
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Полное редактирование site.json</h2>
+              <form class="admin-form" data-json-form>
+                <textarea class="json-editor" name="json"></textarea>
+                <button class="button button--primary" type="submit">Сохранить весь site.json</button>
+                <p class="form-message" data-json-message></p>
+              </form>
+            </section>
+          </div>
         </div>
       </section>
     </div>
