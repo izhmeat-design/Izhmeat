@@ -1,0 +1,115 @@
+[
+  {
+    "id": "beef-cuts",
+    "name": "Говядина отборная",
+    "category": "Говядина",
+    "price": 890,
+    "unit": "кг",
+    "image": "uploads/photo-beef-cuts.jpg",
+    "description": "Свежие отборные куски говядины для жарки, тушения, стейков и домашних заготовок.",
+    "popular": true,
+    "nutrition": {
+      "calories": "187 ккал",
+      "protein": "18.9",
+      "fat": "12.4",
+      "carbs": "0"
+    },
+    "services": [
+      "Разруб",
+      "Обвалка",
+      "Фарш"
+    ],
+    "stock": true,
+    "fallbackImage": "uploads/photo-beef-cuts.jpg"
+  },
+  {
+    "id": "pork-neck",
+    "name": "Шейка свиная",
+    "category": "Свинина",
+    "price": 629,
+    "unit": "кг",
+    "image": "uploads/photo-pork-neck.jpg",
+    "description": "Сочная свежая шейка с мраморностью — для жарки, запекания и шашлыка.",
+    "popular": true,
+    "nutrition": {
+      "calories": "343 ккал",
+      "protein": "13.6",
+      "fat": "31.9",
+      "carbs": "0"
+    },
+    "services": [
+      "Нарезка",
+      "Маринад",
+      "Разруб"
+    ],
+    "stock": true,
+    "fallbackImage": "uploads/photo-pork-neck.jpg"
+  },
+  {
+    "id": "chicken-breast",
+    "name": "Грудка куриная",
+    "category": "Птица",
+    "price": 349,
+    "unit": "кг",
+    "image": "uploads/photo-chicken-breast.jpg",
+    "description": "Нежное свежее куриное филе для запекания, жарки, супов и повседневных блюд.",
+    "popular": true,
+    "nutrition": {
+      "calories": "113 ккал",
+      "protein": "23.6",
+      "fat": "1.9",
+      "carbs": "0.4"
+    },
+    "services": [
+      "Нарезка",
+      "Филе",
+      "Фарш"
+    ],
+    "stock": true,
+    "fallbackImage": "uploads/photo-chicken-breast.jpg"
+  },
+  {
+    "id": "lamb-ribs",
+    "name": "Рёбра ягнёнка",
+    "category": "Баранина",
+    "price": 780,
+    "unit": "кг",
+    "image": "uploads/photo-lamb-ribs.jpg",
+    "description": "Свежие рёбра ягнёнка для запекания, жарки и гриля.",
+    "popular": false,
+    "nutrition": {
+      "calories": "294 ккал",
+      "protein": "16",
+      "fat": "25",
+      "carbs": "0"
+    },
+    "services": [
+      "Разруб",
+      "Маринад"
+    ],
+    "stock": true,
+    "fallbackImage": "uploads/photo-lamb-ribs.jpg"
+  },
+  {
+    "id": "pork-kebab",
+    "name": "Шашлык свиной в маринаде",
+    "category": "Шашлык",
+    "price": 699,
+    "unit": "кг",
+    "image": "uploads/photo-pork-kebab.jpg",
+    "description": "Свежая свинина, нарезанная для шашлыка и замаринованная под заказ.",
+    "popular": true,
+    "nutrition": {
+      "calories": "295 ккал",
+      "protein": "15",
+      "fat": "24",
+      "carbs": "1.5"
+    },
+    "services": [
+      "Нарезка",
+      "Маринад"
+    ],
+    "stock": true,
+    "fallbackImage": "uploads/photo-pork-kebab.jpg"
+  }
+]
