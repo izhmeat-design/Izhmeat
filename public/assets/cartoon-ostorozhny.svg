@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Осторожный гурман</title>
+  <desc id="desc">Оригинальная сытная карикатура для мясного магазина.</desc>
+  <defs>
+    <radialGradient id="bg" cx="45%" cy="25%" r="72%">
+      <stop offset="0" stop-color="#fff4df"/>
+      <stop offset="1" stop-color="#f0c98e"/>
+    </radialGradient>
+    <linearGradient id="apron" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#91402b"/>
+      <stop offset="1" stop-color="#7b1d17"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#1b0805" flood-opacity=".24"/>
+    </filter>
+  </defs>
+  <rect x="52" y="48" width="796" height="1004" rx="92" fill="url(#bg)"/>
+  <circle cx="162" cy="173" r="70" fill="#e7a141" opacity=".45"/>
+  <circle cx="744" cy="230" r="98" fill="#b32a20" opacity=".17"/>
+  <path d="M143 892 C270 1012 634 1013 763 892" fill="#5a221a" opacity=".13"/>
+  
+  <g filter="url(#shadow)">
+    <path d="M293 513 C285 411 318 340 373 309 C409 288 492 288 527 309 C582 340 615 411 607 513" fill="#f0b28a" stroke="#4a1f18" stroke-width="14"/>
+    <path d="M294 206 C337 120 551 114 609 212 C587 188 533 185 504 204 C461 154 366 171 294 206Z" fill="#4e3028" stroke="#4a1f18" stroke-width="14" stroke-linejoin="round"/>
+    <path d="M325 220 C383 165 511 167 573 222 C566 176 537 134 480 118 C401 96 342 142 325 220Z" fill="#4e3028" opacity=".75"/>
+    <circle cx="374" cy="278" r="18" fill="#2b130f"/>
+    <circle cx="526" cy="278" r="18" fill="#2b130f"/>
+    <path d="M334 255 Q370 232 410 236" fill="none" stroke="#4a1f18" stroke-width="12" stroke-linecap="round"/><path d="M494 236 Q535 232 568 255" fill="none" stroke="#4a1f18" stroke-width="12" stroke-linecap="round"/>
+    <path d="M450 285 C432 314 431 343 456 348" fill="none" stroke="#a6563b" stroke-width="10" stroke-linecap="round"/>
+    <path d="M395 315 Q450 286 505 315 Q450 333 395 315Z" fill="#2b130f" opacity=".92"/>
+    <path d="M400 368 Q450 326 500 368" fill="none" stroke="#4a1f18" stroke-width="14" stroke-linecap="round"/>
+    <path d="M276 494 C338 554 563 554 624 494 L668 912 C585 979 320 979 236 912Z" fill="url(#apron)" stroke="#4a1f18" stroke-width="14" stroke-linejoin="round"/>
+    <path d="M343 550 H557 L530 920 H370Z" fill="#fff4df" stroke="#4a1f18" stroke-width="12"/>
+    <path d="M234 586 C153 635 134 735 182 771 C221 800 266 736 318 683" fill="#f0b28a" stroke="#4a1f18" stroke-width="14" stroke-linecap="round"/>
+    <path d="M666 586 C747 635 766 735 718 771 C679 800 634 736 582 683" fill="#f0b28a" stroke="#4a1f18" stroke-width="14" stroke-linecap="round"/>
+    
+    <g transform="rotate(10 680 705)">
+      <path d="M575 653 C636 606 743 620 779 694 C735 765 622 763 574 714Z" fill="#cc4b31" stroke="#4a1f18" stroke-width="12"/>
+      <path d="M638 642 C659 675 657 716 629 748" fill="none" stroke="#f9d8a4" stroke-width="13" stroke-linecap="round" opacity=".8"/>
+      <circle cx="711" cy="690" r="24" fill="#f9d8a4" opacity=".8"/>
+    </g>
+    <path d="M316 941 C310 988 366 1008 403 976" fill="none" stroke="#4a1f18" stroke-width="17" stroke-linecap="round"/>
+    <path d="M584 941 C590 988 534 1008 497 976" fill="none" stroke="#4a1f18" stroke-width="17" stroke-linecap="round"/>
+    <circle cx="262" cy="888" r="22" fill="#e7a141"/>
+    <circle cx="638" cy="888" r="22" fill="#e7a141"/>
+  </g>
+</svg>

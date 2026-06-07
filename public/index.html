@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Лавка свежего мяса — свежие мясные продукты в Ижевске</title>
+  <meta name="description" content="Свежая мясная лавка в Ижевске: говядина, свинина, птица, баранина и мясо для шашлыка с доставкой." />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar__row">
+      <a class="brand brand--with-logo" href="#home" aria-label="Лавка свежего мяса — на главную">
+        <img class="brand__logo" data-site-image="logoImage" src="/assets/logo-lavka-svezhego-myasa.png" alt="Лавка свежего мяса" />
+      </a>
+      <nav class="nav" aria-label="Основное меню">
+        <a href="#catalog">Каталог</a>
+        <a href="#quality">Выбор мясника</a>
+        <a href="#delivery">Доставка</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+      <div class="phone"><small>Заказ по телефону</small><a data-site="phone" href="tel:+70000000000">+7 000 000-00-00</a></div>
+      <button class="cart-button" data-open-cart type="button">Корзина <span data-cart-count>0</span></button>
+    </div>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="hero__glow hero__glow--one"></div>
+      <div class="hero__glow hero__glow--two"></div>
+      <div class="container hero__grid">
+        <div class="hero__content">
+          <p class="eyebrow" data-site="tagline">Свежая мясная лавка в Ижевске • мясо каждый день в наличии</p>
+          <div class="mascot-strip hero__mascots" aria-label="Разделы мясной лавки" data-hero-pills></div>
+          <h1 data-site="heroTitle">Свежая говядина, свинина, птица и баранина</h1>
+          <p data-site="heroText">Отборные куски, аккуратный разруб и мясо для шашлыка под заказ. Выберите товары, а мы уточним вес и удобное время доставки.</p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="#catalog">Выбрать мясо</a>
+            <button class="button button--ghost" data-open-cart type="button">Открыть корзину</button>
+          </div>
+          <div class="hero__stats" aria-label="Преимущества">
+            <div><strong>свежее</strong><span>мясо каждый день</span></div>
+            <div><strong>под заказ</strong><span>разруб и подготовка</span></div>
+            <div><strong>шашлык</strong><span>маринад и нарезка</span></div>
+          </div>
+        </div>
+        <div class="hero__visual">
+          <img class="hero__photo" data-site-image="heroImage" src="/uploads/photo-beef-cuts.jpg" alt="Свежая говядина" />
+          <div class="hero__badge-card">
+            <span data-site="heroBadgeLabel">Сегодня в наличии</span>
+            <strong data-site="heroBadgeText">говядина • свинина • птица • баранина</strong>
+          </div>
+          <div class="hero__stamp" data-site="heroStampText">свежее мясо</div>
+</div>
+      </div>
+    </section>
+
+    <section class="section benefits">
+      <div class="container benefits__grid" data-benefits></div>
+    </section>
+
+    <section id="quality" class="section characters-section">
+      <div class="container">
+        <div class="section__head section__head--characters">
+          <div>
+            <p class="eyebrow" data-quality="eyebrow">Выбор мясника</p>
+            <h2 data-quality="title">Свежее мясо, шашлык и наборы для дома</h2>
+          </div>
+          <p class="characters-lead" data-quality="lead">Мы подбираем свежее мясо под ваш заказ, готовим куски для шашлыка и собираем удобные мясные наборы для дома.</p>
+        </div>
+
+        <div class="characters-grid" aria-label="Карточки раздела" data-quality-cards></div>
+      </div>
+    </section>
+
+    <section id="catalog" class="section section--warm">
+      <div class="container">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow" data-catalog="eyebrow">Каталог</p>
+            <h2 data-catalog="title">Выберите свежее мясо для дома и шашлыка</h2>
+          </div>
+          <label class="search"><span data-catalog="searchLabel">Поиск по магазину</span><input data-search type="search" placeholder="Например: говядина, шейка, баранина" /></label>
+        </div>
+        <div class="chips" data-categories></div>
+        <div class="products" data-products></div>
+      </div>
+    </section>
+
+    <section id="delivery" class="section">
+      <div class="container two-col delivery-block">
+        <div>
+          <p class="eyebrow" data-delivery-section="eyebrow">Доставка и оплата</p>
+          <h2 data-delivery-section="title">Свежий ассортимент с удобной доставкой</h2>
+          <div class="service-panels" data-delivery-services></div>
+        </div>
+        <div class="info-card info-card--photo">
+          <img data-site-image="deliveryImage" src="/uploads/photo-pork-kebab.jpg" alt="Мясо для шашлыка" />
+          <div class="info-card__body">
+            <h3>Условия доставки</h3>
+            <p data-delivery="city"></p>
+            <p><strong data-delivery="price"></strong></p>
+            <p data-delivery="suburb"></p>
+            <p data-delivery="note"></p>
+            <h3>Оплата</h3>
+            <ul data-payment></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--dark">
+      <div class="container two-col">
+        <div>
+          <p class="eyebrow" data-about="eyebrow">Ассортимент на каждый день</p>
+          <h2 data-about="title">Для домашнего ужина, жарки и шашлыка</h2>
+        </div>
+        <p data-site="about"></p>
+      </div>
+    </section>
+
+    <div data-site-blocks></div>
+  </main>
+
+  <footer id="contacts" class="footer">
+    <div class="container footer__grid">
+      <div>
+        <a class="brand brand--footer brand--with-logo" href="#home" aria-label="Лавка свежего мяса — на главную"><img class="brand__logo brand__logo--footer" data-site-image="logoImage" src="/assets/logo-lavka-svezhego-myasa.png" alt="Лавка свежего мяса" /></a>
+        <p data-site="footerText">Свежая мясная лавка для дома, жарки и шашлыка.</p>
+      </div>
+      <div>
+        <h3>Контакты</h3>
+        <p><a data-site="phone" href="tel:+70000000000">+7 000 000-00-00</a></p>
+        <p><a data-site="email" href="mailto:orders@example.com">orders@example.com</a></p>
+      </div>
+      <div>
+        <h3>Адреса</h3>
+        <div data-addresses></div>
+        <p data-site="workTime"></p>
+      </div>
+    </div>
+  </footer>
+
+  <dialog class="cart" data-cart-dialog>
+    <div class="cart__head">
+      <h2>Корзина</h2>
+      <button type="button" class="icon-button" data-close-cart aria-label="Закрыть">×</button>
+    </div>
+    <div data-cart-items class="cart__items"></div>
+    <div class="cart__total">Итого ориентировочно: <strong data-cart-total>0 руб</strong></div>
+    <form data-order-form class="order-form">
+      <h3>Оформление заказа</h3>
+      <label>Имя<input name="name" required placeholder="Как к вам обращаться" /></label>
+      <label>Телефон<input name="phone" required placeholder="+7 ..." /></label>
+      <label>Адрес доставки<input name="address" placeholder="Улица, дом, квартира" /></label>
+      <label>Комментарий<textarea name="comment" rows="3" placeholder="Например: нарезать для шашлыка"></textarea></label>
+      <label class="checkbox"><input type="checkbox" required /> Согласен на обработку данных для оформления заказа</label>
+      <button class="button button--primary" type="submit">Отправить заказ</button>
+      <p class="form-message" data-order-message></p>
+    </form>
+  </dialog>
+
+  <template id="product-card-template">
+    <article class="product-card">
+      <button class="product-card__image" type="button" data-product-open><img alt="" loading="lazy" /></button>
+      <div class="product-card__body">
+        <div class="product-card__topline"><p class="product-card__category"></p><span class="product-card__mark">свежее</span></div>
+        <h3></h3>
+        <p class="product-card__desc"></p>
+        <div class="product-card__bottom">
+          <strong class="product-card__price"></strong>
+          <button class="button button--small" type="button" data-add>В корзину</button>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <dialog class="product-modal" data-product-dialog>
+    <button class="icon-button product-modal__close" data-product-close type="button" aria-label="Закрыть">×</button>
+    <div data-product-content></div>
+  </dialog>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

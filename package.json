@@ -1,0 +1,26 @@
+{
+  "name": "meat-shop-github-cms",
+  "version": "1.0.0",
+  "description": "Локальная и GitHub-ready витрина мясного магазина с админкой, корзиной и уведомлениями.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development nodemon server.js",
+    "seed": "node scripts/seed.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^2.1.1",
+    "nodemailer": "^8.0.10",
+    "https-proxy-agent": "^7.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

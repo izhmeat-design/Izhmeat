@@ -5,7 +5,7 @@
     "category": "Говядина",
     "price": 890,
     "unit": "кг",
-    "image": "uploads/photo-beef-cuts.jpg",
+    "image": "/uploads/photo-beef-cuts.jpg",
     "description": "Свежие отборные куски говядины для жарки, тушения, стейков и домашних заготовок.",
     "popular": true,
     "nutrition": {
@@ -20,7 +20,7 @@
       "Фарш"
     ],
     "stock": true,
-    "fallbackImage": "uploads/photo-beef-cuts.jpg"
+    "fallbackImage": "/uploads/photo-beef-cuts.jpg"
   },
   {
     "id": "pork-neck",
@@ -28,7 +28,7 @@
     "category": "Свинина",
     "price": 629,
     "unit": "кг",
-    "image": "uploads/photo-pork-neck.jpg",
+    "image": "/uploads/photo-pork-neck.jpg",
     "description": "Сочная свежая шейка с мраморностью — для жарки, запекания и шашлыка.",
     "popular": true,
     "nutrition": {
@@ -43,7 +43,7 @@
       "Разруб"
     ],
     "stock": true,
-    "fallbackImage": "uploads/photo-pork-neck.jpg"
+    "fallbackImage": "/uploads/photo-pork-neck.jpg"
   },
   {
     "id": "chicken-breast",
@@ -51,7 +51,7 @@
     "category": "Птица",
     "price": 349,
     "unit": "кг",
-    "image": "uploads/photo-chicken-breast.jpg",
+    "image": "/uploads/photo-chicken-breast.jpg",
     "description": "Нежное свежее куриное филе для запекания, жарки, супов и повседневных блюд.",
     "popular": true,
     "nutrition": {
@@ -66,7 +66,7 @@
       "Фарш"
     ],
     "stock": true,
-    "fallbackImage": "uploads/photo-chicken-breast.jpg"
+    "fallbackImage": "/uploads/photo-chicken-breast.jpg"
   },
   {
     "id": "lamb-ribs",
@@ -74,7 +74,7 @@
     "category": "Баранина",
     "price": 780,
     "unit": "кг",
-    "image": "uploads/photo-lamb-ribs.jpg",
+    "image": "/uploads/photo-lamb-ribs.jpg",
     "description": "Свежие рёбра ягнёнка для запекания, жарки и гриля.",
     "popular": false,
     "nutrition": {
@@ -88,7 +88,7 @@
       "Маринад"
     ],
     "stock": true,
-    "fallbackImage": "uploads/photo-lamb-ribs.jpg"
+    "fallbackImage": "/uploads/photo-lamb-ribs.jpg"
   },
   {
     "id": "pork-kebab",
@@ -96,7 +96,7 @@
     "category": "Шашлык",
     "price": 699,
     "unit": "кг",
-    "image": "uploads/photo-pork-kebab.jpg",
+    "image": "/uploads/photo-pork-kebab.jpg",
     "description": "Свежая свинина, нарезанная для шашлыка и замаринованная под заказ.",
     "popular": true,
     "nutrition": {
@@ -110,6 +110,6 @@
       "Маринад"
     ],
     "stock": true,
-    "fallbackImage": "uploads/photo-pork-kebab.jpg"
+    "fallbackImage": "/uploads/photo-pork-kebab.jpg"
   }
 ]

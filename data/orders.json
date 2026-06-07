@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "id": "mq3fva41-45dcd6",
+    "status": "new",
+    "customer": {
+      "name": "Тест",
+      "phone": "+70000000000",
+      "address": "Тестовый адрес",
+      "comment": "Тест"
+    },
+    "items": [
+      {
+        "id": "beef-cuts",
+        "name": "Говядина отборная",
+        "price": 890,
+        "unit": "кг",
+        "qty": 1
+      }
+    ],
+    "total": 890,
+    "createdAt": "2026-06-07T07:06:43.058Z"
+  }
+]

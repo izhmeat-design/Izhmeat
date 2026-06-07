@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Админка — Лавка свежего мяса</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    body { background: #f9efe4; }
+    .admin-shell { padding: 32px 0 70px; }
+    .admin-header { display:flex; justify-content:space-between; gap:20px; align-items:center; margin-bottom:24px; }
+    .admin-tabs { display:flex; gap:10px; flex-wrap:wrap; margin: 0 0 22px; }
+    .admin-tab { border:0; cursor:pointer; padding:13px 18px; border-radius:999px; font-weight:950; background:#fff; color:var(--ink); border:1px solid var(--line); box-shadow:0 10px 22px rgba(26,10,7,.06); }
+    .admin-tab.is-active { background:var(--dark); color:#fff; }
+    .admin-grid { display:grid; grid-template-columns: 420px 1fr; gap:22px; align-items:start; }
+    .admin-grid--site { grid-template-columns: minmax(420px, .95fr) minmax(520px, 1.05fr); }
+    .admin-stack { display:grid; gap:22px; }
+    .panel { background:#fff; border:1px solid var(--line); border-radius:24px; padding:22px; box-shadow: var(--shadow); }
+    .admin-form { display:grid; gap:12px; }
+    .admin-form__row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .admin-form__row--3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; }
+    .admin-products, .editor-list { display:grid; gap:12px; }
+    .admin-product, .editor-item { display:grid; grid-template-columns: 72px 1fr auto; gap:14px; align-items:center; border:1px solid var(--line); border-radius:18px; padding:12px; background:#fffaf3; }
+    .editor-item { grid-template-columns: 88px 1fr auto; }
+    .admin-product img, .editor-item img { width:72px; height:72px; object-fit:cover; border-radius:14px; background:var(--warm); }
+    .editor-item img { width:88px; height:76px; }
+    .admin-product h3, .editor-item h3 { margin:0; font-size:18px; }
+    .admin-product p, .editor-item p { margin:4px 0 0; color:var(--muted); font-size:14px; }
+    .admin-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .danger { background:#f8dfdc; color:#8c1915; }
+    .muted { color: var(--muted); }
+    .login { min-height: 100vh; display:grid; place-items:center; padding: 24px; }
+    .login .panel { width:min(420px,100%); }
+    .hidden { display:none !important; }
+    pre { white-space: pre-wrap; word-break: break-word; background: var(--warm); padding: 14px; border-radius: 14px; }
+    .wide-field textarea { min-height: 96px; }
+    .json-editor { min-height: 420px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.45; }
+    .mini-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin: 6px 0 12px; }
+
+    .focused-editor { display:grid; gap:14px; }
+    .focused-card-form { border:1px solid var(--line); border-radius:20px; padding:14px; background:#fffaf3; display:grid; gap:10px; }
+    .focused-card-form__head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .focused-card-form__head strong { font-size:18px; }
+    .focused-card-form__preview { display:grid; grid-template-columns:84px 1fr; gap:12px; align-items:center; }
+    .focused-card-form__preview img { width:84px; height:84px; object-fit:cover; border-radius:16px; background:var(--warm); border:1px solid var(--line); }
+    .pill-note { display:inline-flex; padding:7px 10px; border-radius:999px; background:#fff2df; color:var(--accent); font-weight:850; font-size:13px; }
+    @media (max-width: 1120px) { .admin-grid, .admin-grid--site, .admin-form__row--3 { grid-template-columns:1fr; } .admin-header { align-items:flex-start; flex-direction:column; } }
+    @media (max-width: 640px) { .admin-form__row, .admin-product, .editor-item { grid-template-columns:1fr; } .admin-actions { justify-content:flex-start; } }
+  </style>
+</head>
+<body>
+  <section class="login" data-login-screen>
+    <form class="panel admin-form" data-login-form>
+      <a class="brand brand--with-logo" href="/"><img class="brand__logo" src="/assets/logo-lavka-svezhego-myasa.png" alt="Лавка свежего мяса" /></a>
+      <h1 style="font-size:38px;margin:8px 0 0;">Вход</h1>
+      <p class="muted">Введите пароль администратора.</p>
+      <label>Пароль<input name="password" type="password" autocomplete="current-password" required /></label>
+      <button class="button button--primary" type="submit">Войти</button>
+      <p class="form-message" data-login-message></p>
+    </form>
+  </section>
+
+  <main class="admin-shell hidden" data-admin-screen>
+    <div class="container">
+      <div class="admin-header">
+        <div>
+          <p class="eyebrow">Панель управления</p>
+          <h1 style="font-size:46px;margin:0;">Лавка свежего мяса</h1>
+          <p class="muted">Разделы: товары отдельно; весь сайт, статьи, блоки и фото отдельно. Режим хранения: <strong data-data-driver></strong>.</p>
+        </div>
+        <div class="admin-actions">
+          <a class="button button--light" href="/">Открыть сайт</a>
+          <button class="button button--light" data-logout type="button">Выйти</button>
+        </div>
+      </div>
+
+      <div class="admin-tabs" role="tablist" aria-label="Разделы админ-панели">
+        <button class="admin-tab is-active" data-admin-tab="products" type="button">1. Товары</button>
+        <button class="admin-tab" data-admin-tab="site" type="button">2. Редактирование сайта</button>
+      </div>
+
+      <section data-admin-panel="products">
+        <div class="admin-grid">
+          <section class="panel">
+            <h2 style="font-size:30px;">Товар</h2>
+            <form class="admin-form" data-product-form>
+              <input name="id" type="hidden" />
+              <label>Название<input name="name" required placeholder="Например: Шейка свиная" /></label>
+              <div class="admin-form__row">
+                <label>Категория<select name="category" data-category-select></select></label>
+                <label>Новая категория<input name="newCategory" placeholder="Заполнить, если нужна новая" /></label>
+              </div>
+              <div class="admin-form__row">
+                <label>Цена<input name="price" type="number" min="1" step="1" required /></label>
+                <label>Ед. изм.<select name="unit"><option value="кг">кг</option><option value="шт">шт</option><option value="упак">упак</option></select></label>
+              </div>
+              <label>Описание<textarea name="description" rows="4"></textarea></label>
+              <label>Услуги через запятую<input name="services" placeholder="Разруб, Нарезка, Маринад" /></label>
+              <div class="admin-form__row">
+                <label>Калории<input name="calories" placeholder="113 ккал" /></label>
+                <label>Белки<input name="protein" placeholder="23.6" /></label>
+              </div>
+              <div class="admin-form__row">
+                <label>Жиры<input name="fat" placeholder="1.9" /></label>
+                <label>Углеводы<input name="carbs" placeholder="0.4" /></label>
+              </div>
+              <label>Фото<input name="image" type="file" accept="image/*" /></label>
+              <label class="checkbox"><input name="popular" type="checkbox" /> Популярный товар</label>
+              <label class="checkbox"><input name="stock" type="checkbox" checked /> В наличии</label>
+              <button class="button button--primary" type="submit">Сохранить товар</button>
+              <button class="button button--light" data-reset-product type="button">Очистить форму</button>
+              <p class="form-message" data-product-message></p>
+            </form>
+          </section>
+
+          <div class="admin-stack">
+            <section class="panel">
+              <div class="section__head" style="margin-bottom:14px;">
+                <div>
+                  <h2 style="font-size:30px;">Товары</h2>
+                  <p class="muted">Нажмите «Изменить», чтобы заполнить форму слева.</p>
+                </div>
+                <button class="button button--light" data-refresh type="button">Обновить</button>
+              </div>
+              <div class="admin-products" data-admin-products></div>
+            </section>
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Последние заказы</h2>
+              <div data-orders class="admin-products"></div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="hidden" data-admin-panel="site">
+        <div class="admin-grid admin-grid--site">
+          <div class="admin-stack">
+            <section class="panel">
+              <h2 style="font-size:30px;">Основные разделы сайта</h2>
+              <p class="muted">Здесь редактируются шапка, главный экран, каталог, раздел свежего мяса, доставка, контакты, подвал и основные фото сайта.</p>
+              <form class="admin-form" data-site-form>
+                <h3>Общее</h3>
+                <div class="admin-form__row">
+                  <label>Название сайта<input name="brand" required /></label>
+                  <label>Телефон<input name="phone" /></label>
+                </div>
+                <label>Слоган<input name="tagline" /></label>
+                <div class="admin-form__row">
+                  <label>Email<input name="email" type="email" /></label>
+                  <label>Время работы<input name="workTime" /></label>
+                </div>
+                <label>Текст в подвале сайта<input name="footerText" /></label>
+
+                <h3>Главный экран</h3>
+                <label>Главный заголовок<input name="heroTitle" /></label>
+                <label class="wide-field">Текст на главном экране<textarea name="heroText" rows="3"></textarea></label>
+                <div class="admin-form__row">
+                  <label>Подпись бейджа<input name="heroBadgeLabel" /></label>
+                  <label>Текст бейджа<input name="heroBadgeText" /></label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Текст круглой метки<input name="heroStampText" /></label>
+                  <label>Главное фото<input name="heroImageFile" type="file" accept="image/*" /></label>
+                </div>
+                <input name="heroImage" type="hidden" />
+
+                <h3>Каталог</h3>
+                <div class="admin-form__row">
+                  <label>Метка каталога<input name="catalogEyebrow" /></label>
+                  <label>Заголовок каталога<input name="catalogTitle" /></label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Подпись поиска<input name="catalogSearchLabel" /></label>
+                  <label>Плейсхолдер поиска<input name="catalogSearchPlaceholder" /></label>
+                </div>
+
+                <h3>Раздел «Свежее мясо»</h3>
+                <div class="admin-form__row">
+                  <label>Метка раздела<input name="qualityEyebrow" /></label>
+                  <label>Заголовок раздела<input name="qualityTitle" /></label>
+                </div>
+                <label class="wide-field">Описание раздела<textarea name="qualityLead" rows="3"></textarea></label>
+
+                <h3>Доставка и оплата</h3>
+                <div class="admin-form__row">
+                  <label>Метка раздела доставки<input name="deliverySectionEyebrow" /></label>
+                  <label>Заголовок раздела доставки<input name="deliverySectionTitle" /></label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Время доставки<input name="deliveryTime" /></label>
+                  <label>Фото доставки/шашлыка<input name="deliveryImageFile" type="file" accept="image/*" /></label>
+                </div>
+                <input name="deliveryImage" type="hidden" />
+                <div class="admin-form__row">
+                  <label>Название доставки<input name="deliveryCity" /></label>
+                  <label>Стоимость доставки<input name="deliveryPrice" type="number" min="0" step="1" /></label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Бесплатно от<input name="deliveryFreeFrom" type="number" min="0" step="1" /></label>
+                  <label>Пригород<input name="deliverySuburb" /></label>
+                </div>
+                <label>Примечание по доставке<input name="deliveryNote" /></label>
+
+                <h3>Описание и контакты</h3>
+                <div class="admin-form__row">
+                  <label>Метка блока описания<input name="aboutEyebrow" /></label>
+                  <label>Заголовок блока описания<input name="aboutTitle" /></label>
+                </div>
+                <label class="wide-field">Описание блока «Ассортимент»<textarea name="about" rows="4"></textarea></label>
+                <label class="wide-field">Адреса, каждый с новой строки<textarea name="addresses" rows="3"></textarea></label>
+                <label class="wide-field">Преимущества, каждое с новой строки<textarea name="benefits" rows="4"></textarea></label>
+                <label class="wide-field">Способы оплаты, каждый с новой строки<textarea name="payment" rows="3"></textarea></label>
+                <button class="button button--primary" type="submit">Сохранить основные разделы</button>
+                <p class="form-message" data-site-message></p>
+              </form>
+            </section>
+
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Уведомления о заказах</h2>
+              <p class="muted">После оформления заказа сайт отправляет уведомление на email <strong>izhmeat@gmail.com</strong> и в Telegram, если заполнены переменные окружения.</p>
+              <div class="admin-products" data-notification-status>
+                <p class="muted">Загружаем статус уведомлений...</p>
+              </div>
+              <div class="admin-actions" style="justify-content:flex-start;margin-top:12px;">
+                <button class="button button--primary" data-test-notifications type="button">Отправить тестовое уведомление</button>
+                <button class="button button--light" data-find-telegram-chat type="button">Найти Telegram Chat ID</button>
+              </div>
+              <p class="form-message" data-notification-message></p>
+              <div class="admin-products" data-telegram-chats></div>
+            </section>
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Быстрая загрузка фото</h2>
+              <p class="muted">Загрузите фото и используйте полученную ссылку в любом блоке, карточке или JSON-структуре сайта.</p>
+              <form class="admin-form" data-upload-form>
+                <label>Фото<input name="image" type="file" accept="image/*" required /></label>
+                <button class="button button--primary" type="submit">Загрузить фото</button>
+                <p class="form-message" data-upload-message></p>
+              </form>
+            </section>
+          </div>
+
+          <div class="admin-stack">
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Разделы со скриншота</h2>
+              <p class="muted">Прямое редактирование верхних трёх карточек и большого блока «Свежее мясо»: фото, заголовки, бейджи и описания. Эти настройки не затрагивают товары.</p>
+
+              <div class="focused-editor">
+                <div>
+                  <h3>Верхние маленькие карточки над заголовком</h3>
+                  <p class="muted">Это блок с карточками: «Разделка и отбор», «Мясо для шашлыка», «Мясные наборы».</p>
+                  <div data-focused-hero-pills></div>
+                </div>
+
+                <form class="admin-form" data-focused-quality-head>
+                  <h3>Заголовок и описание большого раздела</h3>
+                  <div class="admin-form__row">
+                    <label>Метка над заголовком<input name="eyebrow" /></label>
+                    <label>Заголовок раздела<input name="title" /></label>
+                  </div>
+                  <label class="wide-field">Описание справа<textarea name="lead" rows="3"></textarea></label>
+                  <button class="button button--primary" type="submit">Сохранить заголовок раздела</button>
+                  <p class="form-message" data-focused-quality-head-message></p>
+                </form>
+
+                <div>
+                  <h3>Большие карточки раздела «Свежее мясо»</h3>
+                  <p class="muted">Это три большие карточки с фото: разруб, шашлык, мясные наборы.</p>
+                  <div data-focused-quality-cards></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Карточки, статьи и блоки</h2>
+              <p class="muted">Здесь можно добавлять, редактировать и удалять все повторяющиеся элементы сайта: карточки главного экрана, карточки раздела «Свежее мясо», услуги доставки и дополнительные статьи/блоки. Товары здесь не редактируются.</p>
+              <form class="admin-form" data-content-form>
+                <input name="id" type="hidden" />
+                <input name="imageCurrent" type="hidden" />
+                <div class="admin-form__row">
+                  <label>Где редактировать
+                    <select name="area">
+                      <option value="heroPills">Карточки главного экрана</option>
+                      <option value="qualityCards">Карточки раздела «Свежее мясо»</option>
+                      <option value="deliveryServices">Услуги доставки</option>
+                      <option value="siteBlocks">Дополнительные статьи/блоки</option>
+                    </select>
+                  </label>
+                  <label class="checkbox"><input name="enabled" type="checkbox" checked /> Показывать на сайте</label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Метка / бейдж<input name="tag" placeholder="Например: Свежий разруб" /></label>
+                  <label>Заголовок<input name="title" /></label>
+                </div>
+                <label class="wide-field">Текст<textarea name="text" rows="4"></textarea></label>
+                <div class="admin-form__row">
+                  <label>Фото элемента<input name="image" type="file" accept="image/*" /></label>
+                  <label>Ссылка на фото<input name="imageUrl" placeholder="/uploads/example.jpg" /></label>
+                </div>
+                <div class="admin-form__row">
+                  <label>Тема блока
+                    <select name="theme">
+                      <option value="warm">Тёплый фон</option>
+                      <option value="light">Светлый фон</option>
+                      <option value="dark">Тёмный фон</option>
+                    </select>
+                  </label>
+                  <label>Положение фото
+                    <select name="layout">
+                      <option value="image-right">Фото справа</option>
+                      <option value="image-left">Фото слева</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="admin-actions" style="justify-content:flex-start;">
+                  <button class="button button--primary" type="submit">Сохранить элемент</button>
+                  <button class="button button--light" data-reset-content type="button">Новый элемент</button>
+                </div>
+                <p class="form-message" data-content-message></p>
+              </form>
+
+              <div class="mini-toolbar">
+                <span class="pill-note">Главный экран</span>
+              </div>
+              <div class="editor-list" data-list="heroPills"></div>
+
+              <div class="mini-toolbar">
+                <span class="pill-note">Свежее мясо</span>
+              </div>
+              <div class="editor-list" data-list="qualityCards"></div>
+
+              <div class="mini-toolbar">
+                <span class="pill-note">Доставка</span>
+              </div>
+              <div class="editor-list" data-list="deliveryServices"></div>
+
+              <div class="mini-toolbar">
+                <span class="pill-note">Дополнительные статьи/блоки</span>
+              </div>
+              <div class="editor-list" data-list="siteBlocks"></div>
+            </section>
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Расширенное редактирование всего сайта</h2>
+              <p class="muted">Этот режим открывает всю структуру сайта в JSON: можно менять любые статьи, разделы, карточки, изображения, порядок блоков и тексты. Раздел товаров в этот JSON не входит.</p>
+              <form class="admin-form" data-json-form>
+                <textarea class="json-editor" name="json"></textarea>
+                <div class="admin-actions" style="justify-content:flex-start;">
+                  <button class="button button--primary" type="submit">Сохранить весь сайт</button>
+                  <button class="button button--light" data-json-refresh type="button">Обновить JSON из данных</button>
+                </div>
+                <p class="form-message" data-json-message></p>
+              </form>
+            </section>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/admin.js" defer></script>
+</body>
+</html>
