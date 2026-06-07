@@ -11,6 +11,7 @@ const fallbackImage = product => product.fallbackImage || product.localImage || 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+const DEFAULT_TELEGRAM_WORKER_URL = 'https://lavka-orders-telegram.izhmeat.workers.dev';
 
 async function getJson(url) {
   const response = await fetch(`${url}?v=${Date.now()}`, { cache: 'no-store' });
@@ -335,7 +336,7 @@ async function submitOrder(event) {
   };
 
   const fallbackOrderId = nextLocalOrderId();
-  const workerUrl = String(state.site.telegramWorkerUrl || '').trim();
+  const workerUrl = String(state.site.telegramWorkerUrl || DEFAULT_TELEGRAM_WORKER_URL || '').trim();
   const orderText = formatOrderText(fallbackOrderId, customer, items);
   const payload = {
     orderId: fallbackOrderId,

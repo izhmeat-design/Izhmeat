@@ -62,7 +62,12 @@ async function githubRequest(path, options = {}) {
     }
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.message || `GitHub API error ${response.status}`);
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('GitHub не принял token или у token нет права Contents: Read and write. Скопируйте изменения, обновите страницу и войдите в админку заново.');
+    }
+    throw new Error(data.message || `GitHub API error ${response.status}`);
+  }
   return data;
 }
 
@@ -597,7 +602,7 @@ async function deleteContent(area, index) {
 function renderWorkerForm() {
   const form = $('[data-worker-form]');
   if (!form) return;
-  form.telegramWorkerUrl.value = state.site.telegramWorkerUrl || '';
+  form.elements.telegramWorkerUrl.value = state.site.telegramWorkerUrl || 'https://lavka-orders-telegram.izhmeat.workers.dev';
 }
 
 async function submitWorkerForm(event) {
@@ -606,7 +611,7 @@ async function submitWorkerForm(event) {
   message.textContent = 'Сохраняем Worker URL...';
   try {
     await saveSite(
-      { ...state.site, telegramWorkerUrl: event.currentTarget.telegramWorkerUrl.value.trim() },
+      { ...state.site, telegramWorkerUrl: event.currentTarget.elements.telegramWorkerUrl.value.trim() },
       message,
       'Update Cloudflare Worker URL'
     );

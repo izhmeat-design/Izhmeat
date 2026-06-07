@@ -203,3 +203,20 @@ TELEGRAM_BOT_TOKEN
 ```
 
 Он не хранится в GitHub, `app.js`, `admin-github.js` или `site.json`.
+
+
+## Если Worker URL не сохраняется в админке
+
+В этой сборке адрес Worker уже встроен в `app.js` как резервный адрес:
+
+```text
+https://lavka-orders-telegram.izhmeat.workers.dev
+```
+
+Также он прописан в `data/site.json`:
+
+```json
+"telegramWorkerUrl": "https://lavka-orders-telegram.izhmeat.workers.dev"
+```
+
+Поэтому уведомления должны работать даже если админка временно не смогла сохранить поле из-за GitHub token. Если админка возвращает на экран входа, войдите заново и проверьте, что у GitHub token есть право `Contents: Read and write`.

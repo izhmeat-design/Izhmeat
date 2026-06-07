@@ -69,7 +69,7 @@
       "enabled": true,
       "title": "Мясо для шашлыка",
       "text": "нарезка и маринад",
-      "image": "uploads/hero-pill-2-1780856705475.png",
+      "image": "assets/gaidai-balbes.webp",
       "id": "hero-pill-2"
     },
     {
@@ -90,7 +90,7 @@
         "tag": "Свежий разруб",
         "title": "Свежий разруб",
         "text": "Мы подберём отборные куски, сделаем разруб и подготовим мясо для стейков, жаркого, супов и фарша.",
-        "image": "uploads/quality-card-1-1780857948933.png",
+        "image": "assets/gaidai-byvaliy.webp",
         "id": "quality-card-1"
       },
       {
@@ -98,7 +98,7 @@
         "tag": "Шашлык",
         "title": "Мясо для шашлыка",
         "text": "Мы поможем выбрать мясо для шашлыка, нарежем свежую шейку и замаринуем под заказ для мангала и гриля.",
-        "image": "uploads/quality-card-2-1780856692697.png",
+        "image": "assets/gaidai-balbes.webp",
         "id": "quality-card-2"
       },
       {
@@ -137,5 +137,5 @@
     "title": "Свежий ассортимент с удобной доставкой"
   },
   "logoImage": "assets/logo-lavka-svezhego-myasa.png",
-  "telegramWorkerUrl": ""
+  "telegramWorkerUrl": "https://lavka-orders-telegram.izhmeat.workers.dev"
 }
