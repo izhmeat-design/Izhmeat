@@ -262,9 +262,9 @@
   },
   "sectionOrder": [
     "categories",
-    "hero",
     "daily",
     "quality",
+    "hero",
     "catalog",
     "meatGuide",
     "order",
