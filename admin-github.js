@@ -145,7 +145,8 @@ function normalizeSite(site = {}) {
     qualitySection: { ...(site.qualitySection || {}), cards: Array.isArray(site.qualitySection?.cards) ? site.qualitySection.cards : [] },
     heroPills: Array.isArray(site.heroPills) ? site.heroPills : [],
     deliveryServices: Array.isArray(site.deliveryServices) ? site.deliveryServices : [],
-    siteBlocks: Array.isArray(site.siteBlocks) ? site.siteBlocks : []
+    siteBlocks: Array.isArray(site.siteBlocks) ? site.siteBlocks : [],
+    sectionThemes: site.sectionThemes || {}
   };
 }
 
@@ -286,6 +287,158 @@ async function deleteProduct(id) {
 
 function linesToArray(value) { return String(value || '').split('\n').map(item => item.trim()).filter(Boolean); }
 function arrayToLines(value) { return Array.isArray(value) ? value.join('\n') : ''; }
+
+
+const BUILDER_SECTIONS = [
+  { id: 'hero', label: 'Главный экран', hint: 'Первый экран сайта: слоган, заголовок, текст и главное фото.', imageKey: 'heroImage' },
+  { id: 'categories', label: 'Категории', hint: 'Плитки быстрого выбора категорий.', imageKey: 'categoryTiles' },
+  { id: 'daily', label: 'Товары дня', hint: 'Заголовок блока с популярными товарами.', imageKey: 'products' },
+  { id: 'quality', label: 'Выбор мясника', hint: 'Раздел с большими карточками и фото.', imageKey: 'qualityCards' },
+  { id: 'meatGuide', label: 'Подбор под блюдо', hint: 'Подсказки: шашлык, суп, жарка, фарш.', imageKey: 'meatGuide' },
+  { id: 'order', label: 'Как заказать', hint: 'Шаги оформления заказа.', imageKey: 'orderSteps' },
+  { id: 'catalog', label: 'Каталог', hint: 'Заголовок каталога и тема фона.', imageKey: 'products' },
+  { id: 'delivery', label: 'Доставка', hint: 'Заголовок, условия и фото доставки.', imageKey: 'deliveryImage' },
+  { id: 'about', label: 'Описание магазина', hint: 'Блок о лавке и ассортименте.', imageKey: 'heroImage' },
+  { id: 'contacts', label: 'Подвал и контакты', hint: 'Фон подвала, контакты и короткий текст.', imageKey: 'logoImage' }
+];
+
+function sectionThemeLabel(theme) {
+  return {
+    default: 'стандартная',
+    light: 'светлая',
+    warm: 'тёплая',
+    cream: 'кремовая',
+    dark: 'тёмная',
+    accent: 'красная'
+  }[theme || 'default'] || theme;
+}
+
+function builderGet(sectionId) {
+  const site = state.site;
+  if (sectionId === 'hero') return { eyebrow: site.tagline || '', title: site.heroTitle || '', text: site.heroText || '', image: site.heroImage || '' };
+  if (sectionId === 'categories') return { ...(site.categorySection || {}), image: site.categoryTiles?.[0]?.image || '' };
+  if (sectionId === 'daily') return { ...(site.dailyProductsSection || {}), image: state.products?.[0]?.image || '' };
+  if (sectionId === 'quality') return { ...(site.qualitySection || {}), image: site.qualitySection?.cards?.[0]?.image || '' };
+  if (sectionId === 'meatGuide') return { ...(site.meatGuideSection || {}), image: '' };
+  if (sectionId === 'order') return { ...(site.orderSection || {}), image: '' };
+  if (sectionId === 'catalog') return { ...(site.catalogSection || {}), image: state.products?.[0]?.image || '' };
+  if (sectionId === 'delivery') return { ...(site.deliverySection || {}), text: site.delivery?.note || '', image: site.deliveryImage || '' };
+  if (sectionId === 'about') return { ...(site.aboutSection || {}), text: site.about || '', image: site.heroImage || '' };
+  if (sectionId === 'contacts') return { eyebrow: 'Контакты', title: site.brand || '', text: site.footerText || '', image: site.logoImage || '' };
+  return { eyebrow: '', title: '', text: '', image: '' };
+}
+
+function builderSet(sectionId, values) {
+  const site = state.site;
+  site.sectionThemes = site.sectionThemes || {};
+  site.sectionThemes[sectionId] = values.theme || 'default';
+
+  if (sectionId === 'hero') {
+    site.tagline = values.eyebrow;
+    site.heroTitle = values.title;
+    site.heroText = values.text;
+    if (values.image) site.heroImage = values.image;
+  } else if (sectionId === 'categories') {
+    site.categorySection = { ...(site.categorySection || {}), eyebrow: values.eyebrow, title: values.title, lead: values.text };
+    if (values.image) {
+      site.categoryTiles = site.categoryTiles || [];
+      if (site.categoryTiles[0]) site.categoryTiles[0].image = values.image;
+    }
+  } else if (sectionId === 'daily') {
+    site.dailyProductsSection = { ...(site.dailyProductsSection || {}), eyebrow: values.eyebrow, title: values.title, lead: values.text };
+  } else if (sectionId === 'quality') {
+    site.qualitySection = { ...(site.qualitySection || {}), eyebrow: values.eyebrow, title: values.title, lead: values.text, cards: site.qualitySection?.cards || [] };
+    if (values.image && site.qualitySection.cards?.[0]) site.qualitySection.cards[0].image = values.image;
+  } else if (sectionId === 'meatGuide') {
+    site.meatGuideSection = { ...(site.meatGuideSection || {}), eyebrow: values.eyebrow, title: values.title, lead: values.text };
+  } else if (sectionId === 'order') {
+    site.orderSection = { ...(site.orderSection || {}), eyebrow: values.eyebrow, title: values.title, lead: values.text };
+  } else if (sectionId === 'catalog') {
+    site.catalogSection = { ...(site.catalogSection || {}), eyebrow: values.eyebrow, title: values.title, searchLabel: site.catalogSection?.searchLabel || 'Поиск по магазину', searchPlaceholder: site.catalogSection?.searchPlaceholder || 'Например: говядина, шейка, баранина' };
+  } else if (sectionId === 'delivery') {
+    site.deliverySection = { ...(site.deliverySection || {}), eyebrow: values.eyebrow, title: values.title };
+    site.delivery = { ...(site.delivery || {}), note: values.text };
+    if (values.image) site.deliveryImage = values.image;
+  } else if (sectionId === 'about') {
+    site.aboutSection = { ...(site.aboutSection || {}), eyebrow: values.eyebrow, title: values.title };
+    site.about = values.text;
+  } else if (sectionId === 'contacts') {
+    site.brand = values.title || site.brand;
+    site.footerText = values.text;
+    if (values.image) site.logoImage = values.image;
+  }
+}
+
+function renderBuilderGrid() {
+  const root = $('[data-builder-grid]');
+  if (!root) return;
+  const selected = $('[data-builder-form]')?.sectionId?.value || 'hero';
+  root.innerHTML = BUILDER_SECTIONS.map(section => {
+    const values = builderGet(section.id);
+    const theme = state.site.sectionThemes?.[section.id] || 'default';
+    const image = values.image || state.site.logoImage || 'assets/logo-lavka-svezhego-myasa.png';
+    return `
+      <button class="builder-card ${selected === section.id ? 'is-active' : ''}" type="button" data-builder-section="${section.id}">
+        <img src="${escapeHtml(image)}" alt="${escapeHtml(section.label)}">
+        <span>
+          <strong>${escapeHtml(section.label)}</strong>
+          <span>${escapeHtml(values.title || values.eyebrow || section.hint)}</span>
+          <em>${escapeHtml(sectionThemeLabel(theme))}</em>
+        </span>
+      </button>
+    `;
+  }).join('');
+  root.querySelectorAll('[data-builder-section]').forEach(button => button.addEventListener('click', () => loadBuilderSection(button.dataset.builderSection)));
+}
+
+function loadBuilderSection(sectionId) {
+  const form = $('[data-builder-form]');
+  const section = BUILDER_SECTIONS.find(item => item.id === sectionId) || BUILDER_SECTIONS[0];
+  const values = builderGet(section.id);
+  form.sectionId.value = section.id;
+  form.eyebrow.value = values.eyebrow || '';
+  form.title.value = values.title || '';
+  form.text.value = values.lead || values.text || '';
+  form.imageUrl.value = values.image || '';
+  form.theme.value = state.site.sectionThemes?.[section.id] || 'default';
+  $('[data-builder-selected-title]').textContent = section.label;
+  $('[data-builder-selected-hint]').textContent = section.hint;
+  $('[data-builder-preview]').src = values.image || state.site.logoImage || 'assets/logo-lavka-svezhego-myasa.png';
+  renderBuilderGrid();
+}
+
+async function submitBuilderForm(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const message = $('[data-builder-message]');
+  message.textContent = 'Сохраняем блок конструктора...';
+
+  try {
+    const sectionId = form.sectionId.value || 'hero';
+    const uploaded = form.imageFile.files[0] ? await uploadImage(form.imageFile.files[0], `builder-${sectionId}`) : '';
+    builderSet(sectionId, {
+      eyebrow: form.eyebrow.value.trim(),
+      title: form.title.value.trim(),
+      text: form.text.value.trim(),
+      image: uploaded || form.imageUrl.value.trim(),
+      theme: form.theme.value
+    });
+
+    await saveSite(state.site, message, `Update builder section ${sectionId}`);
+    loadBuilderSection(sectionId);
+    form.imageFile.value = '';
+  } catch (error) {
+    message.textContent = error.message;
+  }
+}
+
+function renderBuilder() {
+  if (!$('[data-builder-grid]')) return;
+  renderBuilderGrid();
+  const current = $('[data-builder-form]')?.sectionId?.value || 'hero';
+  loadBuilderSection(current);
+}
+
 
 function renderSiteForm() {
   const form = $('[data-site-form]');

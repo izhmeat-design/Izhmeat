@@ -39,6 +39,18 @@ function nextLocalOrderId() {
   return `${orderDateKey()}-${next}`;
 }
 
+
+function renderSectionThemes(site) {
+  const allowedThemes = ['default', 'light', 'warm', 'cream', 'dark', 'accent'];
+  $$('[data-section-key]').forEach(section => {
+    allowedThemes.forEach(theme => section.classList.remove(`section-theme-${theme}`));
+    const key = section.dataset.sectionKey;
+    const theme = site.sectionThemes?.[key] || 'default';
+    section.classList.add(`section-theme-${allowedThemes.includes(theme) ? theme : 'default'}`);
+  });
+}
+
+
 function renderHeroPills(site) {
   const root = $('[data-hero-pills]');
   if (!root) return;
@@ -267,6 +279,7 @@ function renderSite() {
   renderCatalogSection(site);
   renderDeliveryServices(site);
   renderSiteBlocks(site);
+  renderSectionThemes(site);
 }
 
 function categories() {

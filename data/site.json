@@ -235,5 +235,17 @@
       "title": "Получите заказ",
       "text": "Доставим по Ижевску или подготовим к самовывозу."
     }
-  ]
+  ],
+  "sectionThemes": {
+    "hero": "default",
+    "categories": "warm",
+    "daily": "light",
+    "quality": "default",
+    "meatGuide": "cream",
+    "order": "warm",
+    "catalog": "warm",
+    "delivery": "light",
+    "about": "dark",
+    "contacts": "dark"
+  }
 }

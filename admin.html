@@ -43,6 +43,23 @@
     .focused-card-form__preview { display:grid; grid-template-columns:84px 1fr; gap:12px; align-items:center; }
     .focused-card-form__preview img { width:84px; height:84px; object-fit:cover; border-radius:16px; background:var(--warm); border:1px solid var(--line); }
     .pill-note { display:inline-flex; padding:7px 10px; border-radius:999px; background:#fff2df; color:var(--accent); font-weight:850; font-size:13px; }
+    .builder-grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; }
+    .builder-card { border:1px solid var(--line); border-radius:20px; padding:10px; background:#fffaf3; display:grid; grid-template-columns:86px 1fr; gap:12px; align-items:center; cursor:pointer; text-align:left; color:var(--ink); }
+    .builder-card.is-active { outline:3px solid rgba(157,34,28,.22); border-color:rgba(157,34,28,.36); background:#fff2df; }
+    .builder-card img { width:86px; height:72px; object-fit:cover; border-radius:14px; background:var(--warm); }
+    .builder-card strong { display:block; font-size:17px; line-height:1.1; margin-bottom:4px; }
+    .builder-card span { display:block; color:var(--muted); font-size:13px; line-height:1.35; }
+    .builder-card em { display:inline-flex; width:max-content; margin-top:7px; padding:4px 8px; border-radius:999px; background:#fff; color:var(--accent); font-style:normal; font-weight:900; font-size:12px; }
+    .builder-preview { border:1px solid var(--line); border-radius:22px; padding:16px; background:#fffaf3; display:grid; gap:12px; }
+    .builder-preview img { width:100%; height:180px; object-fit:cover; border-radius:16px; background:var(--warm); }
+    .color-palette-note { display:flex; gap:8px; flex-wrap:wrap; }
+    .color-palette-note span { width:28px; height:28px; border-radius:50%; border:1px solid var(--line); }
+    .palette-default { background:#fff; }
+    .palette-warm { background:#f7dfc5; }
+    .palette-cream { background:#fff6ed; }
+    .palette-dark { background:#321713; }
+    .palette-accent { background:#9d221c; }
+
     @media (max-width: 1100px) { .admin-grid, .admin-grid--site, .admin-form__row, .admin-form__row--3 { grid-template-columns:1fr; } .admin-header { align-items:flex-start; flex-direction:column; } }
   </style>
 </head>
@@ -129,6 +146,49 @@
       <section class="hidden" data-admin-panel="site">
         <div class="admin-grid admin-grid--site">
           <div class="admin-stack">
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Конструктор страницы</h2>
+              <p class="muted">Мозаика блоков сайта: выберите раздел, измените заголовок, текст, фото и цветовую тему фона. Изменения сохраняются в <code>site.json</code>.</p>
+              <div class="builder-grid" data-builder-grid></div>
+            </section>
+
+            <section class="panel">
+              <h2 style="font-size:30px;">Редактор выбранного блока</h2>
+              <form class="admin-form" data-builder-form>
+                <input name="sectionId" type="hidden" />
+                <div class="builder-preview">
+                  <strong data-builder-selected-title>Выберите блок в конструкторе</strong>
+                  <img data-builder-preview src="assets/logo-lavka-svezhego-myasa.png" alt="Превью блока">
+                  <span class="muted" data-builder-selected-hint>После выбора блока здесь появятся его настройки.</span>
+                </div>
+                <div class="admin-form__row">
+                  <label>Метка / подпись<input name="eyebrow" /></label>
+                  <label>Заголовок<input name="title" /></label>
+                </div>
+                <label class="wide-field">Основной текст<textarea name="text" rows="4"></textarea></label>
+                <div class="admin-form__row">
+                  <label>Заменить фото<input name="imageFile" type="file" accept="image/*" /></label>
+                  <label>Путь к фото<input name="imageUrl" placeholder="uploads/photo.jpg или assets/logo.png" /></label>
+                </div>
+                <label>Цветовая тема фона
+                  <select name="theme">
+                    <option value="default">Стандартная</option>
+                    <option value="light">Светлая</option>
+                    <option value="warm">Тёплая</option>
+                    <option value="cream">Кремовая</option>
+                    <option value="dark">Тёмная</option>
+                    <option value="accent">Фирменная красная</option>
+                  </select>
+                </label>
+                <div class="color-palette-note" aria-label="Палитра">
+                  <span class="palette-default"></span><span class="palette-warm"></span><span class="palette-cream"></span><span class="palette-dark"></span><span class="palette-accent"></span>
+                </div>
+                <button class="button button--primary" type="submit">Сохранить блок конструктора</button>
+                <p class="form-message" data-builder-message></p>
+              </form>
+            </section>
+
             <section class="panel">
               <h2 style="font-size:30px;">Основные разделы сайта</h2>
               <form class="admin-form" data-site-form>

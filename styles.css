@@ -1022,3 +1022,83 @@ h3 { margin-bottom: 10px; }
     padding: 7px;
   }
 }
+
+
+/* Visual constructor section themes */
+[data-section-key].section-theme-light {
+  background: #fff;
+}
+
+[data-section-key].section-theme-warm {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(192,76,44,.10), transparent 34%),
+    linear-gradient(180deg, #fff6ed, #f7dfc5);
+}
+
+[data-section-key].section-theme-cream {
+  background:
+    radial-gradient(circle at 85% 0%, rgba(246,181,84,.12), transparent 36%),
+    linear-gradient(180deg, #fffaf3, #fff3e2);
+}
+
+[data-section-key].section-theme-dark {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255,210,145,.10), transparent 34%),
+    linear-gradient(135deg, #2b110e, #170907);
+  color: #fff;
+}
+
+[data-section-key].section-theme-dark h1,
+[data-section-key].section-theme-dark h2,
+[data-section-key].section-theme-dark h3,
+[data-section-key].section-theme-dark p,
+[data-section-key].section-theme-dark .eyebrow {
+  color: #fff;
+}
+
+[data-section-key].section-theme-dark .characters-lead,
+[data-section-key].section-theme-dark [data-category-section="lead"],
+[data-section-key].section-theme-dark [data-daily-section="lead"],
+[data-section-key].section-theme-dark [data-meat-guide-section="lead"],
+[data-section-key].section-theme-dark [data-order-section="lead"] {
+  color: rgba(255,255,255,.78);
+}
+
+[data-section-key].section-theme-accent {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255,224,185,.18), transparent 38%),
+    linear-gradient(135deg, #9d221c, #5a130f);
+  color: #fff;
+}
+
+[data-section-key].section-theme-accent h1,
+[data-section-key].section-theme-accent h2,
+[data-section-key].section-theme-accent h3,
+[data-section-key].section-theme-accent p,
+[data-section-key].section-theme-accent .eyebrow {
+  color: #fff;
+}
+
+[data-section-key].section-theme-accent .characters-lead,
+[data-section-key].section-theme-accent [data-category-section="lead"],
+[data-section-key].section-theme-accent [data-daily-section="lead"],
+[data-section-key].section-theme-accent [data-meat-guide-section="lead"],
+[data-section-key].section-theme-accent [data-order-section="lead"] {
+  color: rgba(255,255,255,.82);
+}
+
+.footer.section-theme-light,
+.footer.section-theme-warm,
+.footer.section-theme-cream {
+  background: #fff6ed;
+  color: var(--ink);
+}
+
+.footer.section-theme-light a,
+.footer.section-theme-warm a,
+.footer.section-theme-cream a,
+.footer.section-theme-light h3,
+.footer.section-theme-warm h3,
+.footer.section-theme-cream h3 {
+  color: var(--ink);
+}
