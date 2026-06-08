@@ -84,6 +84,118 @@ function renderCatalogSection(site) {
   if (input && section.searchPlaceholder) input.placeholder = section.searchPlaceholder;
 }
 
+function renderEditableSection(prefix, section) {
+  $$(`[data-${prefix}]`).forEach(node => {
+    const key = node.dataset[prefix.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())];
+    if (section && section[key] !== undefined) node.textContent = section[key];
+  });
+}
+
+function getCategoryImage(category) {
+  const tile = (state.site.categoryTiles || []).find(item => item.category === category || item.title === category);
+  if (tile?.image) return tile.image;
+  const product = state.products.find(item => item.category === category && (item.image || item.localImage || item.fallbackImage));
+  return product?.image || product?.localImage || product?.fallbackImage || 'uploads/product-beef.svg';
+}
+
+function categoryProductCount(category) {
+  return state.products.filter(item => item.category === category && item.stock !== false).length;
+}
+
+function renderCategoryTiles(site) {
+  const root = $('[data-category-tiles]');
+  if (!root) return;
+  const existingCategories = categories().filter(category => category !== 'Все');
+  const fromSite = (site.categoryTiles || []).filter(item => item && item.title);
+  const fromProducts = existingCategories
+    .filter(category => !fromSite.some(item => item.category === category || item.title === category))
+    .map(category => ({ title: category, category, image: getCategoryImage(category), text: `${categoryProductCount(category)} позиций` }));
+
+  const tiles = [...fromSite, ...fromProducts].filter(item => item.enabled !== false);
+  root.innerHTML = tiles.map(tile => {
+    const category = tile.category || tile.title;
+    const count = categoryProductCount(category);
+    return `
+      <button class="category-tile" type="button" data-category-tile="${escapeHtml(category)}">
+        <img src="${escapeHtml(tile.image || getCategoryImage(category))}" alt="${escapeHtml(tile.title)}" loading="lazy" />
+        <span class="category-tile__content">
+          <strong>${escapeHtml(tile.title || category)}</strong>
+          <small>${escapeHtml(tile.text || `${count} позиций`)}</small>
+          <em>${count || 'перейти'}</em>
+        </span>
+      </button>
+    `;
+  }).join('');
+
+  root.querySelectorAll('[data-category-tile]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.category = button.dataset.categoryTile;
+      renderCategories();
+      renderProducts();
+      document.querySelector('#catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  renderEditableSection('category-section', site.categorySection || {});
+}
+
+function createProductCard(product, options = {}) {
+  const template = $('#product-card-template');
+  const node = template.content.cloneNode(true);
+  const img = node.querySelector('img');
+  img.src = product.image || fallbackImage(product);
+  img.onerror = () => { img.onerror = null; img.src = fallbackImage(product); };
+  img.alt = product.name;
+  node.querySelector('.product-card__category').textContent = product.category;
+  node.querySelector('h3').textContent = product.name;
+  node.querySelector('.product-card__desc').textContent = product.description || '';
+  node.querySelector('.product-card__price').textContent = `${money(product.price)}/${product.unit}`;
+  const mark = node.querySelector('.product-card__mark');
+  mark.textContent = product.dayLabel || (product.popular ? 'хит' : 'свежее');
+  if (product.popular || options.daily) mark.classList.add('product-card__mark--hit');
+  node.querySelector('[data-add]').addEventListener('click', () => addToCart(product.id));
+  node.querySelector('[data-product-open]').addEventListener('click', () => openProduct(product));
+  return node;
+}
+
+function renderDailyProducts(site) {
+  const root = $('[data-daily-products]');
+  if (!root) return;
+  const popular = state.products.filter(product => product.stock !== false && product.popular).slice(0, 8);
+  const products = popular.length ? popular : state.products.filter(product => product.stock !== false).slice(0, 6);
+  root.innerHTML = '';
+  products.forEach(product => root.appendChild(createProductCard(product, { daily: true })));
+  renderEditableSection('daily-section', site.dailyProductsSection || {});
+}
+
+function renderMeatGuide(site) {
+  const root = $('[data-meat-guide]');
+  if (!root) return;
+  const items = (site.meatGuide || []).filter(item => item && item.enabled !== false);
+  root.innerHTML = items.map((item, index) => `
+    <article class="guide-card">
+      <span>${escapeHtml(item.tag || `совет ${index + 1}`)}</span>
+      <h3>${escapeHtml(item.title || '')}</h3>
+      <p>${escapeHtml(item.text || '')}</p>
+    </article>
+  `).join('');
+  renderEditableSection('meat-guide-section', site.meatGuideSection || {});
+}
+
+function renderOrderSteps(site) {
+  const root = $('[data-order-steps]');
+  if (!root) return;
+  const steps = (site.orderSteps || []).filter(item => item && item.enabled !== false);
+  root.innerHTML = steps.map((step, index) => `
+    <article class="order-step">
+      <b>${index + 1}</b>
+      <h3>${escapeHtml(step.title || '')}</h3>
+      <p>${escapeHtml(step.text || '')}</p>
+    </article>
+  `).join('');
+  renderEditableSection('order-section', site.orderSection || {});
+}
+
 function renderDeliveryServices(site) {
   const root = $('[data-delivery-services]');
   if (!root) return;
@@ -184,27 +296,13 @@ function filteredProducts() {
 
 function renderProducts() {
   const root = $('[data-products]');
-  const template = $('#product-card-template');
   root.innerHTML = '';
   const products = filteredProducts();
   if (!products.length) {
     root.innerHTML = '<p>Товары не найдены. Попробуйте изменить категорию или запрос.</p>';
     return;
   }
-  products.forEach(product => {
-    const node = template.content.cloneNode(true);
-    const img = node.querySelector('img');
-    img.src = product.image || fallbackImage(product);
-    img.onerror = () => { img.onerror = null; img.src = fallbackImage(product); };
-    img.alt = product.name;
-    node.querySelector('.product-card__category').textContent = product.category;
-    node.querySelector('h3').textContent = product.name;
-    node.querySelector('.product-card__desc').textContent = product.description || '';
-    node.querySelector('.product-card__price').textContent = `${money(product.price)}/${product.unit}`;
-    node.querySelector('[data-add]').addEventListener('click', () => addToCart(product.id));
-    node.querySelector('[data-product-open]').addEventListener('click', () => openProduct(product));
-    root.appendChild(node);
-  });
+  products.forEach(product => root.appendChild(createProductCard(product)));
 }
 
 function openProduct(product) {
@@ -254,7 +352,9 @@ function cartItems() {
 
 function renderCartBadge() {
   const count = Object.values(state.cart).reduce((sum, qty) => sum + Number(qty || 0), 0);
-  $('[data-cart-count]').textContent = count.toFixed(count % 1 ? 1 : 0);
+  $$('[data-cart-count]').forEach(node => {
+    node.textContent = count.toFixed(count % 1 ? 1 : 0);
+  });
 }
 
 function renderCart() {
@@ -401,6 +501,10 @@ async function init() {
     state.products = products;
     renderSite();
     renderCategories();
+    renderCategoryTiles(site);
+    renderDailyProducts(site);
+    renderMeatGuide(site);
+    renderOrderSteps(site);
     renderProducts();
     renderCartBadge();
   } catch (error) {

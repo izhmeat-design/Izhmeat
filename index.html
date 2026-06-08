@@ -14,8 +14,9 @@
         <img class="brand__logo" data-site-image="logoImage" src="assets/logo-lavka-svezhego-myasa.png" alt="Лавка свежего мяса" />
       </a>
       <nav class="nav" aria-label="Основное меню">
+        <a href="#categories">Категории</a>
+        <a href="#daily-products">Товары дня</a>
         <a href="#catalog">Каталог</a>
-        <a href="#quality">Выбор мясника</a>
         <a href="#delivery">Доставка</a>
         <a href="#contacts">Контакты</a>
       </nav>
@@ -55,6 +56,33 @@
       </div>
     </section>
 
+
+    <section id="categories" class="section category-showcase">
+      <div class="container">
+        <div class="section__head section__head--compact">
+          <div>
+            <p class="eyebrow" data-category-section="eyebrow">Быстрый выбор</p>
+            <h2 data-category-section="title">Выберите категорию мяса</h2>
+          </div>
+          <p data-category-section="lead">Плитки ведут сразу к нужным товарам в каталоге.</p>
+        </div>
+        <div class="category-tiles" data-category-tiles></div>
+      </div>
+    </section>
+
+    <section id="daily-products" class="section daily-products-section">
+      <div class="container">
+        <div class="section__head section__head--compact">
+          <div>
+            <p class="eyebrow" data-daily-section="eyebrow">Товары дня</p>
+            <h2 data-daily-section="title">Сегодня берут чаще всего</h2>
+          </div>
+          <p data-daily-section="lead">Ходовые позиции для ужина, жарки и шашлыка.</p>
+        </div>
+        <div class="products products--daily" data-daily-products></div>
+      </div>
+    </section>
+
     <section class="section benefits">
       <div class="container benefits__grid" data-benefits></div>
     </section>
@@ -84,6 +112,33 @@
         </div>
         <div class="chips" data-categories></div>
         <div class="products" data-products></div>
+      </div>
+    </section>
+
+
+    <section id="meat-guide" class="section meat-guide-section">
+      <div class="container">
+        <div class="section__head section__head--compact">
+          <div>
+            <p class="eyebrow" data-meat-guide-section="eyebrow">Подскажем с выбором</p>
+            <h2 data-meat-guide-section="title">Какое мясо взять под блюдо</h2>
+          </div>
+          <p data-meat-guide-section="lead">Короткие подсказки помогают быстро выбрать подходящий кусок.</p>
+        </div>
+        <div class="guide-grid" data-meat-guide></div>
+      </div>
+    </section>
+
+    <section id="how-order" class="section section--warm order-steps-section">
+      <div class="container">
+        <div class="section__head section__head--compact">
+          <div>
+            <p class="eyebrow" data-order-section="eyebrow">Как заказать</p>
+            <h2 data-order-section="title">Оформление за 4 шага</h2>
+          </div>
+          <p data-order-section="lead">После заказа оператор подтвердит наличие, вес, подготовку и время доставки.</p>
+        </div>
+        <div class="order-steps" data-order-steps></div>
       </div>
     </section>
 
@@ -140,6 +195,14 @@
       </div>
     </div>
   </footer>
+
+
+  <nav class="mobile-bottom-nav" aria-label="Быстрые действия">
+    <a href="#categories">Категории</a>
+    <a href="#catalog">Каталог</a>
+    <button data-open-cart type="button">Корзина <span data-cart-count>0</span></button>
+    <a data-site="phone" href="tel:+70000000000">Позвонить</a>
+  </nav>
 
   <dialog class="cart" data-cart-dialog>
     <div class="cart__head">
