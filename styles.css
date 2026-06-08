@@ -1435,3 +1435,69 @@ h3 { margin-bottom: 10px; }
     border-radius: 16px;
   }
 }
+
+
+/* v7 audit fix: header/hero spacing and safer category images */
+html {
+  scroll-padding-top: 92px;
+}
+
+.topbar {
+  min-height: 76px;
+}
+
+#home {
+  position: relative;
+}
+
+.hero {
+  min-height: calc(100vh - 76px);
+  padding-top: 104px;
+  padding-bottom: 82px;
+}
+
+.hero__content {
+  padding-top: 10px;
+}
+
+[data-section-key] {
+  scroll-margin-top: 96px;
+}
+
+.category-tile img {
+  background: linear-gradient(135deg, #321713, #9d221c);
+}
+
+.category-tile img[src$=".svg"] {
+  object-fit: contain;
+  padding: 18px;
+  background: #fff6ed;
+}
+
+@media (max-width: 760px) {
+  html {
+    scroll-padding-top: 74px;
+  }
+
+  .topbar {
+    min-height: 66px;
+  }
+
+  .topbar__row {
+    min-height: 66px;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-top: 92px;
+    padding-bottom: 54px;
+  }
+
+  .hero__content {
+    padding-top: 0;
+  }
+
+  [data-section-key] {
+    scroll-margin-top: 78px;
+  }
+}

@@ -159,7 +159,7 @@
     {
       "title": "Птица",
       "category": "Птица",
-      "image": "uploads/product-chicken.svg",
+      "image": "uploads/photo-chicken-breast.jpg",
       "text": "Для ужина и гриля"
     },
     {
@@ -171,13 +171,13 @@
     {
       "title": "Мясные наборы",
       "category": "Мясные наборы",
-      "image": "assets/gaidai-trus.webp",
+      "image": "uploads/photo-beef-cuts.jpg",
       "text": "Для семьи и заготовок"
     },
     {
       "title": "Фарш",
       "category": "Фарш",
-      "image": "uploads/product-beef.svg",
+      "image": "uploads/photo-beef-cuts.jpg",
       "text": "Под котлеты и пельмени"
     }
   ],
@@ -261,16 +261,15 @@
     "contacts": true
   },
   "sectionOrder": [
+    "hero",
     "categories",
     "daily",
     "quality",
     "catalog",
-    "hero",
     "meatGuide",
     "order",
     "delivery",
     "about",
-    "custom-fresh-izhevsk",
-    "contacts"
+    "custom-fresh-izhevsk"
   ]
 }

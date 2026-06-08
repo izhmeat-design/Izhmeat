@@ -255,11 +255,39 @@ function renderSiteBlocks(site) {
   }).join('');
 }
 
+function defaultSectionOrder() {
+  return ['hero', 'benefits', 'categories', 'daily', 'quality', 'catalog', 'meatGuide', 'order', 'delivery', 'about'];
+}
+
+function normalizedPageSectionOrder(site) {
+  const available = $$('[data-section-key]', $('#home')).map(node => node.dataset.sectionKey).filter(key => key !== 'contacts');
+  const saved = Array.isArray(site.sectionOrder) ? site.sectionOrder : [];
+  const base = saved.length ? saved : defaultSectionOrder();
+  const result = base.filter(key => available.includes(key));
+
+  defaultSectionOrder().forEach((key, defaultIndex) => {
+    if (!available.includes(key) || result.includes(key)) return;
+    if (key === 'benefits' && result.includes('hero')) {
+      result.splice(result.indexOf('hero') + 1, 0, key);
+    } else {
+      const previous = defaultSectionOrder().slice(0, defaultIndex).reverse().find(prev => result.includes(prev));
+      if (previous) result.splice(result.indexOf(previous) + 1, 0, key);
+      else result.push(key);
+    }
+  });
+
+  available.forEach(key => {
+    if (!result.includes(key)) result.push(key);
+  });
+
+  return result;
+}
+
 function applySectionOrder(site) {
   const main = $('#home');
   if (!main) return;
 
-  const order = Array.isArray(site.sectionOrder) ? site.sectionOrder : [];
+  const order = normalizedPageSectionOrder(site);
   const orderMap = new Map(order.map((key, index) => [key, index]));
 
   const movable = $$('[data-section-key]', main).filter(node => node.dataset.sectionKey !== 'contacts');
