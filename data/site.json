@@ -262,14 +262,15 @@
   },
   "sectionOrder": [
     "hero",
-    "categories",
     "daily",
+    "categories",
     "quality",
     "catalog",
     "meatGuide",
     "order",
     "delivery",
     "about",
-    "custom-fresh-izhevsk"
+    "custom-fresh-izhevsk",
+    "contacts"
   ]
 }
