@@ -46,12 +46,17 @@ function renderSectionThemes(site) {
   $$('[data-section-key]').forEach(section => {
     allowedThemes.forEach(theme => section.classList.remove(`section-theme-${theme}`));
     const key = section.dataset.sectionKey;
-    const theme = site.sectionThemes?.[key] || 'default';
+    let theme = site.sectionThemes?.[key] || 'default';
+
+    if (key.startsWith('custom-')) {
+      const block = (site.siteBlocks || []).find((item, index) => customSectionKey(item, index) === key);
+      if (block?.theme) theme = block.theme;
+    }
+
     section.classList.add(`section-theme-${allowedThemes.includes(theme) ? theme : 'default'}`);
     section.hidden = visibility[key] === false;
   });
 }
-
 
 function renderHeroPills(site) {
   const root = $('[data-hero-pills]');
@@ -222,16 +227,21 @@ function renderDeliveryServices(site) {
   `).join('');
 }
 
+function customSectionKey(block, index) {
+  return `custom-${block?.id || index}`;
+}
+
 function renderSiteBlocks(site) {
   const root = $('[data-site-blocks]');
   if (!root) return;
   const blocks = (site.siteBlocks || []).filter(block => block && block.enabled !== false && (block.title || block.text || block.image));
-  root.innerHTML = blocks.map(block => {
+  root.innerHTML = blocks.map((block, index) => {
     const theme = block.theme === 'dark' ? 'section--dark' : (block.theme === 'warm' ? 'section--warm' : '');
     const reverse = block.layout === 'image-left' ? ' site-block__grid--reverse' : '';
     const image = block.image ? `<div class="site-block__media"><img src="${escapeHtml(block.image)}" alt="${escapeHtml(block.title || 'Фото блока')}" loading="lazy"></div>` : '';
+    const key = customSectionKey(block, index);
     return `
-      <section class="section site-block ${theme}">
+      <section class="section site-block ${theme}" data-section-key="${escapeHtml(key)}">
         <div class="container site-block__grid${reverse}">
           <div class="site-block__content">
             ${block.eyebrow ? `<p class="eyebrow">${escapeHtml(block.eyebrow)}</p>` : ''}
@@ -243,6 +253,23 @@ function renderSiteBlocks(site) {
       </section>
     `;
   }).join('');
+}
+
+function applySectionOrder(site) {
+  const main = $('#home');
+  if (!main) return;
+
+  const order = Array.isArray(site.sectionOrder) ? site.sectionOrder : [];
+  const orderMap = new Map(order.map((key, index) => [key, index]));
+
+  const movable = $$('[data-section-key]', main).filter(node => node.dataset.sectionKey !== 'contacts');
+  const sorted = [...movable].sort((a, b) => {
+    const ai = orderMap.has(a.dataset.sectionKey) ? orderMap.get(a.dataset.sectionKey) : 1000 + movable.indexOf(a);
+    const bi = orderMap.has(b.dataset.sectionKey) ? orderMap.get(b.dataset.sectionKey) : 1000 + movable.indexOf(b);
+    return ai - bi;
+  });
+
+  sorted.forEach(node => main.appendChild(node));
 }
 
 function renderSite() {
@@ -282,6 +309,7 @@ function renderSite() {
   renderDeliveryServices(site);
   renderSiteBlocks(site);
   renderSectionThemes(site);
+  applySectionOrder(site);
 }
 
 function categories() {

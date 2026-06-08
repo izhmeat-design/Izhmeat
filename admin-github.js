@@ -147,7 +147,8 @@ function normalizeSite(site = {}) {
     deliveryServices: Array.isArray(site.deliveryServices) ? site.deliveryServices : [],
     siteBlocks: Array.isArray(site.siteBlocks) ? site.siteBlocks : [],
     sectionThemes: site.sectionThemes || {},
-    sectionVisibility: site.sectionVisibility || {}
+    sectionVisibility: site.sectionVisibility || {},
+    sectionOrder: Array.isArray(site.sectionOrder) ? site.sectionOrder : []
   };
 }
 
@@ -464,6 +465,48 @@ function renderBuilder() {
 }
 
 
+
+function fixedSectionIds() {
+  return BUILDER_SECTIONS.map(section => section.id);
+}
+
+function customSectionId(block, index) {
+  return `custom-${block?.id || index}`;
+}
+
+function customIndexFromSectionId(sectionId) {
+  if (!sectionId || !sectionId.startsWith('custom-')) return -1;
+  const raw = sectionId.replace('custom-', '');
+  const directIndex = Number(raw);
+  if (Number.isInteger(directIndex) && state.site.siteBlocks?.[directIndex]) return directIndex;
+  return (state.site.siteBlocks || []).findIndex((block, index) => customSectionId(block, index) === sectionId);
+}
+
+function isMovableVisualSection(sectionId) {
+  return sectionId !== 'contacts';
+}
+
+function allSectionIds() {
+  const custom = (state.site.siteBlocks || []).map((block, index) => customSectionId(block, index));
+  return [...fixedSectionIds(), ...custom];
+}
+
+function normalizedSectionOrder() {
+  const all = allSectionIds();
+  const saved = Array.isArray(state.site.sectionOrder) ? state.site.sectionOrder : [];
+  const result = saved.filter(id => all.includes(id));
+  all.forEach(id => {
+    if (!result.includes(id)) result.push(id);
+  });
+  return result;
+}
+
+function ensureSectionOrder() {
+  state.site.sectionOrder = normalizedSectionOrder();
+  return state.site.sectionOrder;
+}
+
+
 function safeImage(path) {
   return path || state.site.logoImage || 'assets/logo-lavka-svezhego-myasa.png';
 }
@@ -521,24 +564,35 @@ function renderVisualBuilder(showHidden = false) {
   const root = $('[data-visual-builder]');
   if (!root) return;
 
+  ensureSectionOrder();
+
   const fixedSections = BUILDER_SECTIONS.map(section => ({ type: 'fixed', id: section.id, label: section.label, hint: section.hint }));
   const customSections = (state.site.siteBlocks || []).map((block, index) => ({
     type: 'custom',
-    id: `custom-${index}`,
+    id: customSectionId(block, index),
     index,
     label: block.title || block.eyebrow || `Дополнительный блок ${index + 1}`,
     hint: block.text || 'Дополнительный редактируемый блок'
   }));
 
-  const sections = [...fixedSections, ...customSections].filter(section => {
-    if (section.type === 'custom') return showHidden || state.site.siteBlocks?.[section.index]?.enabled !== false;
-    return showHidden || isSectionVisible(section.id);
-  });
+  const byId = new Map([...fixedSections, ...customSections].map(section => [section.id, section]));
+  const sections = normalizedSectionOrder()
+    .map(id => byId.get(id))
+    .filter(Boolean)
+    .filter(section => {
+      if (section.type === 'custom') return showHidden || state.site.siteBlocks?.[section.index]?.enabled !== false;
+      return showHidden || isSectionVisible(section.id);
+    });
 
-  root.innerHTML = sections.map(section => {
+  root.innerHTML = sections.map((section, visibleIndex) => {
     const hidden = section.type === 'custom'
       ? state.site.siteBlocks?.[section.index]?.enabled === false
       : !isSectionVisible(section.id);
+
+    const moveButtons = isMovableVisualSection(section.id) ? `
+      <button type="button" title="Поднять блок выше" data-visual-move-up="${section.id}">↑</button>
+      <button type="button" title="Опустить блок ниже" data-visual-move-down="${section.id}">↓</button>
+    ` : '<span class="visual-toolbar-note">внизу</span>';
 
     if (section.type === 'custom') {
       const block = state.site.siteBlocks[section.index] || {};
@@ -547,10 +601,12 @@ function renderVisualBuilder(showHidden = false) {
       return `
         <article class="visual-site-section visual-theme-${escapeHtml(theme)} ${hidden ? 'is-hidden-section' : ''}" data-visual-section="${section.id}" data-custom-index="${section.index}">
           <div class="visual-toolbar">
-            <button type="button" data-visual-edit="${section.id}">✎</button>
-            <button type="button" data-visual-add="${section.id}">+</button>
-            <button type="button" data-visual-delete="${section.id}">🗑</button>
+            ${moveButtons}
+            <button type="button" title="Редактировать" data-visual-edit="${section.id}">✎</button>
+            <button type="button" title="Добавить блок" data-visual-add="${section.id}">+</button>
+            <button type="button" title="Удалить блок" data-visual-delete="${section.id}">🗑</button>
           </div>
+          <div class="visual-section-label">${visibleIndex + 1}. ${escapeHtml(section.label)}${hidden ? ' — скрыт' : ''}</div>
           <div class="visual-preview-split">
             <div>
               <p>${escapeHtml(block.eyebrow || 'Дополнительный блок')}</p>
@@ -566,11 +622,12 @@ function renderVisualBuilder(showHidden = false) {
     return `
       <article class="visual-site-section ${visualThemeClass(section.id)} ${hidden ? 'is-hidden-section' : ''}" data-visual-section="${section.id}">
         <div class="visual-toolbar">
-          <button type="button" data-visual-edit="${section.id}">✎</button>
-          <button type="button" data-visual-add="${section.id}">+</button>
-          <button type="button" data-visual-delete="${section.id}">🗑</button>
+          ${moveButtons}
+          <button type="button" title="Редактировать" data-visual-edit="${section.id}">✎</button>
+          <button type="button" title="Добавить блок" data-visual-add="${section.id}">+</button>
+          <button type="button" title="Скрыть блок" data-visual-delete="${section.id}">🗑</button>
         </div>
-        <div class="visual-section-label">${escapeHtml(section.label)}${hidden ? ' — скрыт' : ''}</div>
+        <div class="visual-section-label">${visibleIndex + 1}. ${escapeHtml(section.label)}${hidden ? ' — скрыт' : ''}</div>
         ${visualSectionContent(section.id)}
       </article>
     `;
@@ -579,6 +636,8 @@ function renderVisualBuilder(showHidden = false) {
   root.querySelectorAll('[data-visual-edit]').forEach(button => button.addEventListener('click', () => visualEditSection(button.dataset.visualEdit)));
   root.querySelectorAll('[data-visual-add]').forEach(button => button.addEventListener('click', () => visualAddBlock(button.dataset.visualAdd)));
   root.querySelectorAll('[data-visual-delete]').forEach(button => button.addEventListener('click', () => visualDeleteSection(button.dataset.visualDelete)));
+  root.querySelectorAll('[data-visual-move-up]').forEach(button => button.addEventListener('click', () => visualMoveSection(button.dataset.visualMoveUp, -1)));
+  root.querySelectorAll('[data-visual-move-down]').forEach(button => button.addEventListener('click', () => visualMoveSection(button.dataset.visualMoveDown, 1)));
 }
 
 function scrollToBlockEditor() {
@@ -591,7 +650,7 @@ function scrollToContentEditor() {
 
 function visualEditSection(sectionId) {
   if (sectionId.startsWith('custom-')) {
-    const index = Number(sectionId.replace('custom-', ''));
+    const index = customIndexFromSectionId(sectionId);
     const block = state.site.siteBlocks?.[index];
     if (!block) return;
     const form = $('[data-content-form]');
@@ -620,8 +679,9 @@ async function visualAddBlock(afterSectionId = '') {
   message.textContent = 'Добавляем новый блок...';
   try {
     state.site.siteBlocks = state.site.siteBlocks || [];
+    const id = `block-${Date.now()}`;
     state.site.siteBlocks.push({
-      id: `block-${Date.now()}`,
+      id,
       enabled: true,
       eyebrow: 'Новый блок',
       title: 'Новый раздел сайта',
@@ -630,6 +690,14 @@ async function visualAddBlock(afterSectionId = '') {
       theme: 'warm',
       layout: 'image-right'
     });
+
+    const newSectionId = `custom-${id}`;
+    const order = ensureSectionOrder().filter(item => item !== newSectionId);
+    const afterIndex = order.indexOf(afterSectionId);
+    if (afterIndex >= 0) order.splice(afterIndex + 1, 0, newSectionId);
+    else order.push(newSectionId);
+    state.site.sectionOrder = order;
+
     await saveSite(state.site, message, 'Add visual builder block');
     renderVisualBuilder(true);
   } catch (error) {
@@ -641,11 +709,12 @@ async function visualDeleteSection(sectionId) {
   const message = $('[data-visual-builder-message]');
   try {
     if (sectionId.startsWith('custom-')) {
-      const index = Number(sectionId.replace('custom-', ''));
+      const index = customIndexFromSectionId(sectionId);
       const block = state.site.siteBlocks?.[index];
       if (!block) return;
       if (!confirm('Удалить дополнительный блок?')) return;
       state.site.siteBlocks.splice(index, 1);
+      state.site.sectionOrder = ensureSectionOrder().filter(item => item !== sectionId);
       await saveSite(state.site, message, 'Delete visual builder block');
       renderVisualBuilder(true);
       return;
@@ -662,11 +731,36 @@ async function visualDeleteSection(sectionId) {
   }
 }
 
+async function visualMoveSection(sectionId, direction) {
+  const message = $('[data-visual-builder-message]');
+  try {
+    if (!isMovableVisualSection(sectionId)) {
+      message.textContent = 'Этот блок закреплён внизу сайта.';
+      return;
+    }
+    const order = ensureSectionOrder();
+    const index = order.indexOf(sectionId);
+    if (index < 0) return;
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= order.length) {
+      message.textContent = direction < 0 ? 'Этот блок уже самый верхний.' : 'Этот блок уже самый нижний.';
+      return;
+    }
+    const [item] = order.splice(index, 1);
+    order.splice(nextIndex, 0, item);
+    state.site.sectionOrder = order;
+    await saveSite(state.site, message, `Move section ${sectionId}`);
+    renderVisualBuilder(true);
+  } catch (error) {
+    message.textContent = error.message;
+  }
+}
+
 async function visualRestoreSection(sectionId) {
   const message = $('[data-visual-builder-message]');
   try {
     if (sectionId.startsWith('custom-')) {
-      const index = Number(sectionId.replace('custom-', ''));
+      const index = customIndexFromSectionId(sectionId);
       if (state.site.siteBlocks?.[index]) state.site.siteBlocks[index].enabled = true;
     } else {
       state.site.sectionVisibility = state.site.sectionVisibility || {};

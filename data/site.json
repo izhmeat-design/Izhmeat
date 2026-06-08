@@ -259,5 +259,17 @@
     "delivery": true,
     "about": true,
     "contacts": true
-  }
+  },
+  "sectionOrder": [
+    "hero",
+    "categories",
+    "daily",
+    "quality",
+    "catalog",
+    "meatGuide",
+    "order",
+    "delivery",
+    "about",
+    "custom-fresh-izhevsk"
+  ]
 }

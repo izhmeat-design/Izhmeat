@@ -1348,3 +1348,40 @@ h3 { margin-bottom: 10px; }
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* Visual builder v5 reorder buttons */
+.visual-toolbar {
+  flex-wrap: wrap;
+  max-width: 236px;
+}
+
+.visual-toolbar button[title*="Поднять"],
+.visual-toolbar button[title*="Опустить"] {
+  background: #fff6ed;
+  color: var(--accent);
+}
+
+.visual-toolbar button[title*="Поднять"]:hover,
+.visual-toolbar button[title*="Опустить"]:hover {
+  background: var(--dark);
+  color: #fff;
+}
+
+@media (max-width: 760px) {
+  .visual-toolbar {
+    max-width: calc(100% - 20px);
+  }
+}
+
+.visual-toolbar-note {
+  display: grid;
+  place-items: center;
+  min-height: 34px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: #fff6ed;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
