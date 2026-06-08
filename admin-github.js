@@ -370,37 +370,55 @@ function builderSet(sectionId, values) {
 }
 
 function renderBuilderGrid() {
-  const root = $('[data-builder-grid]');
-  if (!root) return;
-  const selected = $('[data-builder-form]')?.sectionId?.value || 'hero';
-  root.innerHTML = BUILDER_SECTIONS.map(section => {
-    const values = builderGet(section.id);
-    const theme = state.site.sectionThemes?.[section.id] || 'default';
-    const image = values.image || state.site.logoImage || 'assets/logo-lavka-svezhego-myasa.png';
-    return `
-      <button class="builder-card ${selected === section.id ? 'is-active' : ''}" type="button" data-builder-section="${section.id}">
-        <img src="${escapeHtml(image)}" alt="${escapeHtml(section.label)}">
-        <span>
-          <strong>${escapeHtml(section.label)}</strong>
-          <span>${escapeHtml(values.title || values.eyebrow || section.hint)}</span>
-          <em>${escapeHtml(sectionThemeLabel(theme))}</em>
-        </span>
-      </button>
-    `;
-  }).join('');
-  root.querySelectorAll('[data-builder-section]').forEach(button => button.addEventListener('click', () => loadBuilderSection(button.dataset.builderSection)));
+  const form = $('[data-builder-form]');
+  const selected = form?.elements?.sectionId?.value || 'hero';
+
+  const renderCards = root => {
+    if (!root) return;
+    root.innerHTML = BUILDER_SECTIONS.map(section => {
+      const values = builderGet(section.id);
+      const theme = state.site.sectionThemes?.[section.id] || 'default';
+      const image = values.image || state.site.logoImage || 'assets/logo-lavka-svezhego-myasa.png';
+      return `
+        <button class="builder-card ${selected === section.id ? 'is-active' : ''}" type="button" data-builder-section="${section.id}">
+          <img src="${escapeHtml(image)}" alt="${escapeHtml(section.label)}">
+          <span>
+            <strong>${escapeHtml(section.label)}</strong>
+            <span>${escapeHtml(values.title || values.eyebrow || section.hint)}</span>
+            <em>${escapeHtml(sectionThemeLabel(theme))}</em>
+          </span>
+        </button>
+      `;
+    }).join('');
+    root.querySelectorAll('[data-builder-section]').forEach(button => {
+      button.addEventListener('click', () => loadBuilderSection(button.dataset.builderSection));
+    });
+  };
+
+  renderCards($('[data-builder-grid]'));
+  renderCards($('[data-builder-mini-grid]'));
+
+  const select = $('[data-builder-select]');
+  if (select) {
+    select.innerHTML = BUILDER_SECTIONS.map(section => `<option value="${section.id}">${escapeHtml(section.label)}</option>`).join('');
+    select.value = selected;
+  }
 }
 
 function loadBuilderSection(sectionId) {
   const form = $('[data-builder-form]');
+  if (!form) return;
   const section = BUILDER_SECTIONS.find(item => item.id === sectionId) || BUILDER_SECTIONS[0];
   const values = builderGet(section.id);
-  form.sectionId.value = section.id;
-  form.eyebrow.value = values.eyebrow || '';
-  form.title.value = values.title || '';
-  form.text.value = values.lead || values.text || '';
-  form.imageUrl.value = values.image || '';
-  form.theme.value = state.site.sectionThemes?.[section.id] || 'default';
+
+  form.elements.sectionId.value = section.id;
+  if (form.elements.sectionSelect) form.elements.sectionSelect.value = section.id;
+  form.elements.eyebrow.value = values.eyebrow || '';
+  form.elements.title.value = values.title || '';
+  form.elements.text.value = values.lead || values.text || '';
+  form.elements.imageUrl.value = values.image || '';
+  form.elements.theme.value = state.site.sectionThemes?.[section.id] || 'default';
+
   $('[data-builder-selected-title]').textContent = section.label;
   $('[data-builder-selected-hint]').textContent = section.hint;
   $('[data-builder-preview]').src = values.image || state.site.logoImage || 'assets/logo-lavka-svezhego-myasa.png';
@@ -409,36 +427,38 @@ function loadBuilderSection(sectionId) {
 
 async function submitBuilderForm(event) {
   event.preventDefault();
+  event.stopPropagation();
   const form = event.currentTarget;
+  const elements = form.elements;
   const message = $('[data-builder-message]');
   message.textContent = 'Сохраняем блок конструктора...';
 
   try {
-    const sectionId = form.sectionId.value || 'hero';
-    const uploaded = form.imageFile.files[0] ? await uploadImage(form.imageFile.files[0], `builder-${sectionId}`) : '';
+    const sectionId = elements.sectionId.value || elements.sectionSelect?.value || 'hero';
+    const uploaded = elements.imageFile.files[0] ? await uploadImage(elements.imageFile.files[0], `builder-${sectionId}`) : '';
     builderSet(sectionId, {
-      eyebrow: form.eyebrow.value.trim(),
-      title: form.title.value.trim(),
-      text: form.text.value.trim(),
-      image: uploaded || form.imageUrl.value.trim(),
-      theme: form.theme.value
+      eyebrow: elements.eyebrow.value.trim(),
+      title: elements.title.value.trim(),
+      text: elements.text.value.trim(),
+      image: uploaded || elements.imageUrl.value.trim(),
+      theme: elements.theme.value
     });
 
     await saveSite(state.site, message, `Update builder section ${sectionId}`);
     loadBuilderSection(sectionId);
-    form.imageFile.value = '';
+    elements.imageFile.value = '';
   } catch (error) {
     message.textContent = error.message;
   }
 }
 
 function renderBuilder() {
-  if (!$('[data-builder-grid]')) return;
+  const form = $('[data-builder-form]');
+  if (!form) return;
   renderBuilderGrid();
-  const current = $('[data-builder-form]')?.sectionId?.value || 'hero';
+  const current = form.elements.sectionId.value || form.elements.sectionSelect?.value || 'hero';
   loadBuilderSection(current);
 }
-
 
 function renderSiteForm() {
   const form = $('[data-site-form]');
@@ -812,6 +832,7 @@ $('[data-connect-form]').addEventListener('submit', connect);
 $('[data-product-form]').addEventListener('submit', submitProduct);
 $('[data-reset-product]').addEventListener('click', resetProductForm);
 $('[data-site-form]').addEventListener('submit', submitSite);
+$('[data-builder-form]').addEventListener('submit', submitBuilderForm);
 $('[data-focused-quality-head]').addEventListener('submit', submitFocusedQualityHead);
 $('[data-content-form]').addEventListener('submit', submitContent);
 $('[data-reset-content]').addEventListener('click', resetContentForm);
@@ -820,3 +841,5 @@ $('[data-upload-form]').addEventListener('submit', submitUpload);
 $('[data-reload]').addEventListener('click', loadData);
 $('[data-logout]').addEventListener('click', logout);
 $$('[data-admin-tab]').forEach(button => button.addEventListener('click', () => switchTab(button.dataset.adminTab)));
+const builderSelect = $('[data-builder-select]');
+if (builderSelect) builderSelect.addEventListener('change', event => loadBuilderSection(event.target.value));

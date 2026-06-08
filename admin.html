@@ -89,6 +89,7 @@
         <div>
           <p class="eyebrow">GitHub Pages CMS</p>
           <h1 style="font-size:42px;margin:0;">Лавка свежего мяса</h1>
+          <p class="pill-note">Версия: конструктор v3 — выбор блока и сохранение исправлены</p>
           <p class="muted">Изменения сохраняются коммитами в GitHub. Telegram/email-бот без сервера в этой версии не работает.</p>
         </div>
         <div class="admin-actions">
@@ -149,7 +150,7 @@
 
             <section class="panel">
               <h2 style="font-size:30px;">Конструктор страницы</h2>
-              <p class="muted">Мозаика блоков сайта: выберите раздел, измените заголовок, текст, фото и цветовую тему фона. Изменения сохраняются в <code>site.json</code>.</p>
+              <p class="muted">Мозаика блоков сайта: нажмите на плитку блока или выберите блок в выпадающем списке. Потом измените заголовок, текст, фото и цветовую тему фона. Изменения сохраняются в <code>site.json</code>.</p>
               <div class="builder-grid" data-builder-grid></div>
             </section>
 
@@ -157,6 +158,10 @@
               <h2 style="font-size:30px;">Редактор выбранного блока</h2>
               <form class="admin-form" data-builder-form>
                 <input name="sectionId" type="hidden" />
+                <label>Выберите блок
+                  <select name="sectionSelect" data-builder-select></select>
+                </label>
+                <div class="builder-mini-grid" data-builder-mini-grid></div>
                 <div class="builder-preview">
                   <strong data-builder-selected-title>Выберите блок в конструкторе</strong>
                   <img data-builder-preview src="assets/logo-lavka-svezhego-myasa.png" alt="Превью блока">
@@ -371,6 +376,6 @@
     </div>
   </main>
 
-  <script src="admin-github.js" defer></script>
+  <script src="admin-github.js?v=builder-v3" defer></script>
 </body>
 </html>
