@@ -89,7 +89,7 @@
         <div>
           <p class="eyebrow">GitHub Pages CMS</p>
           <h1 style="font-size:42px;margin:0;">Лавка свежего мяса</h1>
-          <p class="pill-note">Версия: конструктор v3 — выбор блока и сохранение исправлены</p>
+          <p class="pill-note">Версия: визуальный конструктор v4 — блоки с +, ✎ и 🗑</p>
           <p class="muted">Изменения сохраняются коммитами в GitHub. Telegram/email-бот без сервера в этой версии не работает.</p>
         </div>
         <div class="admin-actions">
@@ -148,14 +148,20 @@
         <div class="admin-grid admin-grid--site">
           <div class="admin-stack">
 
-            <section class="panel">
-              <h2 style="font-size:30px;">Конструктор страницы</h2>
-              <p class="muted">Мозаика блоков сайта: нажмите на плитку блока или выберите блок в выпадающем списке. Потом измените заголовок, текст, фото и цветовую тему фона. Изменения сохраняются в <code>site.json</code>.</p>
-              <div class="builder-grid" data-builder-grid></div>
+            <section class="panel visual-builder-panel">
+              <h2 style="font-size:30px;">Визуальный конструктор сайта</h2>
+              <p class="muted">Ниже открывается мини-версия сайта. Наведите на блок или нажмите на него: появятся кнопки <b>✎</b> редактировать, <b>+</b> добавить новый блок, <b>🗑</b> скрыть/удалить.</p>
+              <div class="visual-builder-actions">
+                <button class="button button--primary" data-visual-add-global type="button">+ Добавить новый блок</button>
+                <button class="button button--light" data-visual-show-hidden type="button">Показать скрытые блоки</button>
+              </div>
+              <div class="visual-site-canvas" data-visual-builder></div>
+              <p class="form-message" data-visual-builder-message></p>
             </section>
 
+
             <section class="panel">
-              <h2 style="font-size:30px;">Редактор выбранного блока</h2>
+              <h2 style="font-size:30px;">Редактор блока</h2>
               <form class="admin-form" data-builder-form>
                 <input name="sectionId" type="hidden" />
                 <label>Выберите блок

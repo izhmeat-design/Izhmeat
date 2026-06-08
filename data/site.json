@@ -1,8 +1,8 @@
 {
   "brand": "Лавка свежего мяса",
-  "tagline": "Шашлык",
-  "heroTitle": "Для Друзей",
-  "heroText": "Советы для друзей",
+  "tagline": "Свежая мясная лавка в Ижевске • мясо каждый день в наличии",
+  "heroTitle": "Свежая говядина, свинина, птица и баранина",
+  "heroText": "Мы подберём отборные куски, сделаем аккуратный разруб и подготовим мясо для шашлыка под заказ. Выберите товары, а мы уточним вес и удобное время доставки по Ижевску.",
   "phone": "+7 000 000-00-00",
   "email": "izhmeat@gmail.com",
   "workTime": "Ежедневно с 9:00 до 20:00",
@@ -42,7 +42,7 @@
       "image": "uploads/photo-beef-cuts.jpg"
     }
   ],
-  "heroImage": "uploads/builder-hero-1780947825591.png",
+  "heroImage": "uploads/photo-beef-cuts.jpg",
   "heroBadgeLabel": "Сегодня в наличии",
   "heroBadgeText": "говядина • свинина • птица • баранина",
   "heroStampText": "свежее мясо",
@@ -237,7 +237,7 @@
     }
   ],
   "sectionThemes": {
-    "hero": "warm",
+    "hero": "default",
     "categories": "warm",
     "daily": "light",
     "quality": "default",
@@ -247,5 +247,17 @@
     "delivery": "light",
     "about": "dark",
     "contacts": "dark"
+  },
+  "sectionVisibility": {
+    "hero": true,
+    "categories": true,
+    "daily": true,
+    "quality": true,
+    "meatGuide": true,
+    "order": true,
+    "catalog": true,
+    "delivery": true,
+    "about": true,
+    "contacts": true
   }
 }

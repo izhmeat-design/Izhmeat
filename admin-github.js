@@ -146,7 +146,8 @@ function normalizeSite(site = {}) {
     heroPills: Array.isArray(site.heroPills) ? site.heroPills : [],
     deliveryServices: Array.isArray(site.deliveryServices) ? site.deliveryServices : [],
     siteBlocks: Array.isArray(site.siteBlocks) ? site.siteBlocks : [],
-    sectionThemes: site.sectionThemes || {}
+    sectionThemes: site.sectionThemes || {},
+    sectionVisibility: site.sectionVisibility || {}
   };
 }
 
@@ -160,6 +161,8 @@ async function loadData() {
   renderSiteForm();
   renderFocusedScreenshotSections();
   renderContentLists();
+  renderBuilder();
+  renderVisualBuilder();
   renderWorkerForm();
   renderJsonEditor();
 }
@@ -460,6 +463,223 @@ function renderBuilder() {
   loadBuilderSection(current);
 }
 
+
+function safeImage(path) {
+  return path || state.site.logoImage || 'assets/logo-lavka-svezhego-myasa.png';
+}
+
+function visualSectionContent(sectionId) {
+  const site = state.site;
+  const data = builderGet(sectionId);
+  const title = data.title || data.eyebrow || BUILDER_SECTIONS.find(item => item.id === sectionId)?.label || sectionId;
+  const text = data.lead || data.text || BUILDER_SECTIONS.find(item => item.id === sectionId)?.hint || '';
+  const image = data.image || site.logoImage || 'assets/logo-lavka-svezhego-myasa.png';
+
+  if (sectionId === 'categories') {
+    const tiles = (site.categoryTiles || []).slice(0, 6).map(item => `<span>${escapeHtml(item.title || item.category || 'Категория')}</span>`).join('');
+    return `<div class="visual-preview-grid">${tiles}</div>`;
+  }
+
+  if (sectionId === 'daily') {
+    const products = (state.products || []).filter(p => p.popular).slice(0, 4);
+    const cards = (products.length ? products : (state.products || []).slice(0, 4)).map(p => `<span>${escapeHtml(p.name || 'Товар')}</span>`).join('');
+    return `<div class="visual-preview-grid">${cards}</div>`;
+  }
+
+  if (sectionId === 'meatGuide') {
+    const cards = (site.meatGuide || []).slice(0, 4).map(item => `<span>${escapeHtml(item.title || 'Совет')}</span>`).join('');
+    return `<div class="visual-preview-grid">${cards}</div>`;
+  }
+
+  if (sectionId === 'order') {
+    const cards = (site.orderSteps || []).slice(0, 4).map((item, index) => `<span>${index + 1}. ${escapeHtml(item.title || 'Шаг')}</span>`).join('');
+    return `<div class="visual-preview-grid">${cards}</div>`;
+  }
+
+  return `
+    <div class="visual-preview-split">
+      <div>
+        <p>${escapeHtml(data.eyebrow || '')}</p>
+        <h3>${escapeHtml(title)}</h3>
+        <span>${escapeHtml(text)}</span>
+      </div>
+      <img src="${escapeHtml(image)}" alt="">
+    </div>
+  `;
+}
+
+function visualThemeClass(sectionId) {
+  const theme = state.site.sectionThemes?.[sectionId] || 'default';
+  return `visual-theme-${theme}`;
+}
+
+function isSectionVisible(sectionId) {
+  return state.site.sectionVisibility?.[sectionId] !== false;
+}
+
+function renderVisualBuilder(showHidden = false) {
+  const root = $('[data-visual-builder]');
+  if (!root) return;
+
+  const fixedSections = BUILDER_SECTIONS.map(section => ({ type: 'fixed', id: section.id, label: section.label, hint: section.hint }));
+  const customSections = (state.site.siteBlocks || []).map((block, index) => ({
+    type: 'custom',
+    id: `custom-${index}`,
+    index,
+    label: block.title || block.eyebrow || `Дополнительный блок ${index + 1}`,
+    hint: block.text || 'Дополнительный редактируемый блок'
+  }));
+
+  const sections = [...fixedSections, ...customSections].filter(section => {
+    if (section.type === 'custom') return showHidden || state.site.siteBlocks?.[section.index]?.enabled !== false;
+    return showHidden || isSectionVisible(section.id);
+  });
+
+  root.innerHTML = sections.map(section => {
+    const hidden = section.type === 'custom'
+      ? state.site.siteBlocks?.[section.index]?.enabled === false
+      : !isSectionVisible(section.id);
+
+    if (section.type === 'custom') {
+      const block = state.site.siteBlocks[section.index] || {};
+      const theme = block.theme || 'default';
+      const image = block.image || state.site.logoImage || 'assets/logo-lavka-svezhego-myasa.png';
+      return `
+        <article class="visual-site-section visual-theme-${escapeHtml(theme)} ${hidden ? 'is-hidden-section' : ''}" data-visual-section="${section.id}" data-custom-index="${section.index}">
+          <div class="visual-toolbar">
+            <button type="button" data-visual-edit="${section.id}">✎</button>
+            <button type="button" data-visual-add="${section.id}">+</button>
+            <button type="button" data-visual-delete="${section.id}">🗑</button>
+          </div>
+          <div class="visual-preview-split">
+            <div>
+              <p>${escapeHtml(block.eyebrow || 'Дополнительный блок')}</p>
+              <h3>${escapeHtml(block.title || section.label)}</h3>
+              <span>${escapeHtml(block.text || '')}</span>
+            </div>
+            <img src="${escapeHtml(image)}" alt="">
+          </div>
+        </article>
+      `;
+    }
+
+    return `
+      <article class="visual-site-section ${visualThemeClass(section.id)} ${hidden ? 'is-hidden-section' : ''}" data-visual-section="${section.id}">
+        <div class="visual-toolbar">
+          <button type="button" data-visual-edit="${section.id}">✎</button>
+          <button type="button" data-visual-add="${section.id}">+</button>
+          <button type="button" data-visual-delete="${section.id}">🗑</button>
+        </div>
+        <div class="visual-section-label">${escapeHtml(section.label)}${hidden ? ' — скрыт' : ''}</div>
+        ${visualSectionContent(section.id)}
+      </article>
+    `;
+  }).join('');
+
+  root.querySelectorAll('[data-visual-edit]').forEach(button => button.addEventListener('click', () => visualEditSection(button.dataset.visualEdit)));
+  root.querySelectorAll('[data-visual-add]').forEach(button => button.addEventListener('click', () => visualAddBlock(button.dataset.visualAdd)));
+  root.querySelectorAll('[data-visual-delete]').forEach(button => button.addEventListener('click', () => visualDeleteSection(button.dataset.visualDelete)));
+}
+
+function scrollToBlockEditor() {
+  $('[data-builder-form]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function scrollToContentEditor() {
+  $('[data-content-form]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function visualEditSection(sectionId) {
+  if (sectionId.startsWith('custom-')) {
+    const index = Number(sectionId.replace('custom-', ''));
+    const block = state.site.siteBlocks?.[index];
+    if (!block) return;
+    const form = $('[data-content-form]');
+    form.area.value = 'siteBlocks';
+    form.id.value = block.id || '';
+    form.eyebrow.value = block.eyebrow || '';
+    form.title.value = block.title || '';
+    form.text.value = block.text || '';
+    form.imageCurrent.value = block.image || '';
+    form.theme.value = block.theme || 'default';
+    form.layout.value = block.layout || 'image-right';
+    form.enabled.checked = block.enabled !== false;
+    form.dataset.editIndex = index;
+    scrollToContentEditor();
+    $('[data-visual-builder-message]').textContent = 'Открыт дополнительный блок в редакторе «Карточки, статьи и блоки».';
+    return;
+  }
+
+  loadBuilderSection(sectionId);
+  scrollToBlockEditor();
+  $('[data-visual-builder-message]').textContent = 'Блок открыт в редакторе ниже. Измените поля и нажмите «Сохранить блок конструктора».';
+}
+
+async function visualAddBlock(afterSectionId = '') {
+  const message = $('[data-visual-builder-message]');
+  message.textContent = 'Добавляем новый блок...';
+  try {
+    state.site.siteBlocks = state.site.siteBlocks || [];
+    state.site.siteBlocks.push({
+      id: `block-${Date.now()}`,
+      enabled: true,
+      eyebrow: 'Новый блок',
+      title: 'Новый раздел сайта',
+      text: 'Здесь можно написать текст, добавить фото и выбрать фон.',
+      image: state.site.heroImage || state.site.logoImage || 'assets/logo-lavka-svezhego-myasa.png',
+      theme: 'warm',
+      layout: 'image-right'
+    });
+    await saveSite(state.site, message, 'Add visual builder block');
+    renderVisualBuilder(true);
+  } catch (error) {
+    message.textContent = error.message;
+  }
+}
+
+async function visualDeleteSection(sectionId) {
+  const message = $('[data-visual-builder-message]');
+  try {
+    if (sectionId.startsWith('custom-')) {
+      const index = Number(sectionId.replace('custom-', ''));
+      const block = state.site.siteBlocks?.[index];
+      if (!block) return;
+      if (!confirm('Удалить дополнительный блок?')) return;
+      state.site.siteBlocks.splice(index, 1);
+      await saveSite(state.site, message, 'Delete visual builder block');
+      renderVisualBuilder(true);
+      return;
+    }
+
+    const label = BUILDER_SECTIONS.find(item => item.id === sectionId)?.label || sectionId;
+    if (!confirm(`Скрыть блок «${label}» на сайте? Его можно вернуть через JSON или кнопку показа скрытых блоков.`)) return;
+    state.site.sectionVisibility = state.site.sectionVisibility || {};
+    state.site.sectionVisibility[sectionId] = false;
+    await saveSite(state.site, message, `Hide visual builder section ${sectionId}`);
+    renderVisualBuilder(true);
+  } catch (error) {
+    message.textContent = error.message;
+  }
+}
+
+async function visualRestoreSection(sectionId) {
+  const message = $('[data-visual-builder-message]');
+  try {
+    if (sectionId.startsWith('custom-')) {
+      const index = Number(sectionId.replace('custom-', ''));
+      if (state.site.siteBlocks?.[index]) state.site.siteBlocks[index].enabled = true;
+    } else {
+      state.site.sectionVisibility = state.site.sectionVisibility || {};
+      state.site.sectionVisibility[sectionId] = true;
+    }
+    await saveSite(state.site, message, `Restore visual builder section ${sectionId}`);
+    renderVisualBuilder(true);
+  } catch (error) {
+    message.textContent = error.message;
+  }
+}
+
+
 function renderSiteForm() {
   const form = $('[data-site-form]');
   const site = state.site;
@@ -508,6 +728,8 @@ async function saveSite(site, messageNode, commitMessage = 'Update site') {
   renderSiteForm();
   renderFocusedScreenshotSections();
   renderContentLists();
+  renderBuilder();
+  renderVisualBuilder();
   renderWorkerForm();
   renderJsonEditor();
   if (messageNode) messageNode.textContent = 'Сохранено. GitHub Pages обновит сайт через некоторое время.';
@@ -841,5 +1063,7 @@ $('[data-upload-form]').addEventListener('submit', submitUpload);
 $('[data-reload]').addEventListener('click', loadData);
 $('[data-logout]').addEventListener('click', logout);
 $$('[data-admin-tab]').forEach(button => button.addEventListener('click', () => switchTab(button.dataset.adminTab)));
+$('[data-visual-add-global]')?.addEventListener('click', () => visualAddBlock('global'));
+$('[data-visual-show-hidden]')?.addEventListener('click', () => renderVisualBuilder(true));
 const builderSelect = $('[data-builder-select]');
 if (builderSelect) builderSelect.addEventListener('change', event => loadBuilderSection(event.target.value));

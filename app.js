@@ -42,11 +42,13 @@ function nextLocalOrderId() {
 
 function renderSectionThemes(site) {
   const allowedThemes = ['default', 'light', 'warm', 'cream', 'dark', 'accent'];
+  const visibility = site.sectionVisibility || {};
   $$('[data-section-key]').forEach(section => {
     allowedThemes.forEach(theme => section.classList.remove(`section-theme-${theme}`));
     const key = section.dataset.sectionKey;
     const theme = site.sectionThemes?.[key] || 'default';
     section.classList.add(`section-theme-${allowedThemes.includes(theme) ? theme : 'default'}`);
+    section.hidden = visibility[key] === false;
   });
 }
 
