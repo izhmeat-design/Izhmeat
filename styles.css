@@ -1385,3 +1385,53 @@ h3 { margin-bottom: 10px; }
   font-size: 11px;
   font-weight: 900;
 }
+
+
+/* Visual builder v6 item editor */
+.visual-items-panel {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(157,34,28,.07), transparent 30%),
+    #fff;
+}
+
+.visual-items-editor {
+  display: grid;
+  gap: 14px;
+}
+
+.visual-item-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 22px;
+  background: #fffaf3;
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 22px rgba(26,10,7,.05);
+}
+
+.visual-item-card__head {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.visual-item-card__head strong {
+  color: var(--accent);
+  font-size: 18px;
+}
+
+.visual-item-card textarea {
+  min-height: 92px;
+}
+
+@media (max-width: 760px) {
+  .visual-item-card__head {
+    grid-template-columns: 1fr;
+  }
+
+  .visual-item-card__head .icon-button {
+    width: 100%;
+    border-radius: 16px;
+  }
+}

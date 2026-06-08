@@ -648,6 +648,208 @@ function scrollToContentEditor() {
   $('[data-content-form]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+
+function visualItemConfig(sectionId) {
+  const configs = {
+    hero: {
+      title: 'Карточки главного экрана',
+      path: 'heroPills',
+      fields: [
+        ['title', 'Заголовок', 'input'],
+        ['text', 'Текст', 'textarea'],
+        ['image', 'Фото', 'input']
+      ],
+      make: () => ({ enabled: true, title: 'Новая карточка', text: 'Описание карточки', image: state.site.logoImage || 'assets/logo-lavka-svezhego-myasa.png' })
+    },
+    categories: {
+      title: 'Плитки категорий',
+      path: 'categoryTiles',
+      fields: [
+        ['title', 'Название плитки', 'input'],
+        ['category', 'Категория фильтра', 'input'],
+        ['text', 'Описание', 'textarea'],
+        ['image', 'Фото', 'input']
+      ],
+      make: () => ({ enabled: true, title: 'Новая категория', category: 'Новая категория', text: 'Описание категории', image: state.site.heroImage || 'uploads/product-beef.svg' })
+    },
+    quality: {
+      title: 'Карточки раздела «Выбор мясника»',
+      path: 'qualitySection.cards',
+      fields: [
+        ['tag', 'Метка', 'input'],
+        ['title', 'Заголовок', 'input'],
+        ['text', 'Текст', 'textarea'],
+        ['image', 'Фото', 'input']
+      ],
+      make: () => ({ enabled: true, tag: 'свежее', title: 'Новая карточка', text: 'Описание карточки', image: state.site.heroImage || 'uploads/product-beef.svg' })
+    },
+    meatGuide: {
+      title: 'Карточки «Подбор под блюдо»',
+      path: 'meatGuide',
+      fields: [
+        ['tag', 'Метка', 'input'],
+        ['title', 'Заголовок', 'input'],
+        ['text', 'Текст', 'textarea']
+      ],
+      make: () => ({ enabled: true, tag: 'совет', title: 'Новая подсказка', text: 'Описание подсказки' })
+    },
+    order: {
+      title: 'Шаги заказа',
+      path: 'orderSteps',
+      fields: [
+        ['title', 'Заголовок шага', 'input'],
+        ['text', 'Текст шага', 'textarea']
+      ],
+      make: () => ({ enabled: true, title: 'Новый шаг', text: 'Описание шага' })
+    },
+    delivery: {
+      title: 'Карточки доставки',
+      path: 'deliveryServices',
+      fields: [
+        ['title', 'Заголовок', 'input'],
+        ['text', 'Текст', 'textarea']
+      ],
+      make: () => ({ enabled: true, title: 'Новая услуга', text: 'Описание услуги' })
+    }
+  };
+  return configs[sectionId] || null;
+}
+
+function getPathValue(object, path) {
+  return path.split('.').reduce((acc, key) => acc?.[key], object);
+}
+
+function setPathValue(object, path, value) {
+  const parts = path.split('.');
+  let target = object;
+  parts.slice(0, -1).forEach(key => {
+    target[key] = target[key] || {};
+    target = target[key];
+  });
+  target[parts[parts.length - 1]] = value;
+}
+
+function currentVisualItems() {
+  const config = visualItemConfig(state.visualItemsSectionId);
+  if (!config) return [];
+  const items = getPathValue(state.site, config.path);
+  return Array.isArray(items) ? items : [];
+}
+
+function renderVisualItemsEditor(sectionId) {
+  state.visualItemsSectionId = sectionId;
+  const panel = $('[data-visual-items-panel]');
+  const root = $('[data-visual-items-editor]');
+  const hint = $('[data-visual-items-hint]');
+  const message = $('[data-visual-items-message]');
+  if (!panel || !root) return;
+
+  const config = visualItemConfig(sectionId);
+  if (!config) {
+    panel.classList.remove('hidden');
+    root.innerHTML = `
+      <div class="status-note">
+        Для этого блока редактируются только общие поля выше: заголовок, текст, фото и фон.
+        Если нужно менять товары дня — откройте вкладку «Товары» и включите/выключите галочку «Популярный товар».
+      </div>
+    `;
+    hint.textContent = 'У выбранного блока нет отдельных карточек для редактирования.';
+    message.textContent = '';
+    $('[data-visual-add-item]').disabled = true;
+    $('[data-visual-save-items]').disabled = true;
+    return;
+  }
+
+  $('[data-visual-add-item]').disabled = false;
+  $('[data-visual-save-items]').disabled = false;
+  panel.classList.remove('hidden');
+  hint.textContent = config.title;
+  message.textContent = '';
+
+  const items = currentVisualItems();
+  root.innerHTML = items.map((item, index) => `
+    <article class="visual-item-card" data-visual-item-index="${index}">
+      <div class="visual-item-card__head">
+        <strong>${index + 1}. ${escapeHtml(item.title || item.tag || 'Карточка')}</strong>
+        <label class="checkbox"><input data-item-field="enabled" type="checkbox" ${item.enabled === false ? '' : 'checked'} /> Показывать</label>
+        <button class="icon-button" type="button" data-visual-remove-item="${index}" aria-label="Удалить карточку">×</button>
+      </div>
+      ${config.fields.map(([key, label, type]) => {
+        const value = item[key] || '';
+        if (type === 'textarea') {
+          return `<label>${escapeHtml(label)}<textarea rows="3" data-item-field="${key}">${escapeHtml(value)}</textarea></label>`;
+        }
+        return `<label>${escapeHtml(label)}<input data-item-field="${key}" value="${escapeHtml(value)}" /></label>`;
+      }).join('')}
+    </article>
+  `).join('') || '<p class="muted">Карточек пока нет. Нажмите «+ Добавить карточку».</p>';
+
+  root.querySelectorAll('[data-visual-remove-item]').forEach(button => {
+    button.addEventListener('click', () => {
+      const index = Number(button.dataset.visualRemoveItem);
+      const config = visualItemConfig(state.visualItemsSectionId);
+      const items = [...currentVisualItems()];
+      items.splice(index, 1);
+      setPathValue(state.site, config.path, items);
+      renderVisualItemsEditor(state.visualItemsSectionId);
+      renderVisualBuilder(true);
+    });
+  });
+
+  root.querySelectorAll('[data-item-field]').forEach(input => {
+    input.addEventListener('input', collectVisualItemsFromForm);
+    input.addEventListener('change', collectVisualItemsFromForm);
+  });
+
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+}
+
+function collectVisualItemsFromForm() {
+  const config = visualItemConfig(state.visualItemsSectionId);
+  const root = $('[data-visual-items-editor]');
+  if (!config || !root) return [];
+  const items = [...root.querySelectorAll('[data-visual-item-index]')].map(card => {
+    const item = {};
+    config.fields.forEach(([key]) => {
+      const field = card.querySelector(`[data-item-field="${key}"]`);
+      item[key] = field ? field.value.trim() : '';
+    });
+    const enabled = card.querySelector('[data-item-field="enabled"]');
+    item.enabled = enabled ? enabled.checked : true;
+    return item;
+  });
+  setPathValue(state.site, config.path, items);
+  return items;
+}
+
+function visualAddItem() {
+  const config = visualItemConfig(state.visualItemsSectionId);
+  if (!config) return;
+  const items = [...currentVisualItems(), config.make()];
+  setPathValue(state.site, config.path, items);
+  renderVisualItemsEditor(state.visualItemsSectionId);
+  renderVisualBuilder(true);
+}
+
+async function visualSaveItems() {
+  const config = visualItemConfig(state.visualItemsSectionId);
+  const message = $('[data-visual-items-message]');
+  if (!config) {
+    message.textContent = 'Для этого блока нет отдельных карточек.';
+    return;
+  }
+  try {
+    collectVisualItemsFromForm();
+    message.textContent = 'Сохраняем карточки блока...';
+    await saveSite(state.site, message, `Update ${state.visualItemsSectionId} items`);
+    renderVisualItemsEditor(state.visualItemsSectionId);
+    renderVisualBuilder(true);
+  } catch (error) {
+    message.textContent = error.message;
+  }
+}
+
+
 function visualEditSection(sectionId) {
   if (sectionId.startsWith('custom-')) {
     const index = customIndexFromSectionId(sectionId);
@@ -664,14 +866,17 @@ function visualEditSection(sectionId) {
     form.layout.value = block.layout || 'image-right';
     form.enabled.checked = block.enabled !== false;
     form.dataset.editIndex = index;
+    const panel = $('[data-visual-items-panel]');
+    if (panel) panel.classList.add('hidden');
     scrollToContentEditor();
     $('[data-visual-builder-message]').textContent = 'Открыт дополнительный блок в редакторе «Карточки, статьи и блоки».';
     return;
   }
 
   loadBuilderSection(sectionId);
+  renderVisualItemsEditor(sectionId);
   scrollToBlockEditor();
-  $('[data-visual-builder-message]').textContent = 'Блок открыт в редакторе ниже. Измените поля и нажмите «Сохранить блок конструктора».';
+  $('[data-visual-builder-message]').textContent = 'Блок открыт в редакторе ниже. Сначала можно изменить общие поля, а ещё ниже — карточки внутри блока.';
 }
 
 async function visualAddBlock(afterSectionId = '') {
