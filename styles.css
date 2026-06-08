@@ -987,3 +987,38 @@ h3 { margin-bottom: 10px; }
     font-size: 20px;
   }
 }
+
+
+/* Mobile fix: show full butcher character portraits without cutting heads */
+@media (max-width: 760px) {
+  .characters-grid .character-card {
+    grid-template-rows: 230px auto;
+  }
+
+  .characters-grid .character-card__image-wrap {
+    height: 230px;
+    padding: 8px;
+    background: #fff6ed;
+    display: grid;
+    place-items: center;
+  }
+
+  .characters-grid .character-card__image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center top;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 420px) {
+  .characters-grid .character-card {
+    grid-template-rows: 218px auto;
+  }
+
+  .characters-grid .character-card__image-wrap {
+    height: 218px;
+    padding: 7px;
+  }
+}
